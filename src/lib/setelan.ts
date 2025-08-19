@@ -5,6 +5,9 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export interface Kontak {
     alamat: string;
+    kecamatan: string;
+    kabupaten: string;
+    provinsi: string;
     telepon: string;
     email: string;
 }
@@ -30,7 +33,10 @@ export const getSetelan = async (): Promise<Setelan> => {
     namaDesa: "Desa Digital",
     deskripsiSitus: "Platform informasi desa yang modern, informatif, dan mudah dikelola.",
     kontak: {
-        alamat: "Jl. Raya Desa No. 1, Kec. Digital, Kab. Cerdas",
+        alamat: "Jl. Raya Desa No. 1",
+        kecamatan: "Kec. Digital",
+        kabupaten: "Kab. Cerdas",
+        provinsi: "Prov. Teknologi",
         telepon: "(021) 123-4567",
         email: "kontak@desadigital.id"
     }

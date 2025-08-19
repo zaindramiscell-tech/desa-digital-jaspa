@@ -5,6 +5,7 @@ import { getSetelan } from "@/lib/setelan";
 
 export async function Footer() {
   const setelan = await getSetelan();
+  const alamatLengkap = `${setelan.kontak.alamat}, ${setelan.kontak.kecamatan}, ${setelan.kontak.kabupaten}, ${setelan.kontak.provinsi}`;
 
   return (
     <footer className="bg-accent text-accent-foreground">
@@ -20,9 +21,9 @@ export async function Footer() {
           <div>
             <h4 className="font-bold font-headline mb-4">Kontak Kami</h4>
             <ul className="space-y-2">
-              <li className="flex items-center">
-                <MapPin className="w-4 h-4 mr-2 shrink-0" />
-                <span>{setelan.kontak.alamat}</span>
+              <li className="flex items-start">
+                <MapPin className="w-4 h-4 mr-2 shrink-0 mt-1" />
+                <span>{alamatLengkap}</span>
               </li>
               <li className="flex items-center">
                 <Phone className="w-4 h-4 mr-2 shrink-0" />

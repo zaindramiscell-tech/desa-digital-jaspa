@@ -18,6 +18,9 @@ const formSchema = z.object({
   namaDesa: z.string().min(3, "Nama desa minimal 3 karakter."),
   deskripsiSitus: z.string().min(10, "Deskripsi situs minimal 10 karakter."),
   alamat: z.string().min(10, "Alamat minimal 10 karakter."),
+  kecamatan: z.string().min(3, "Kecamatan minimal 3 karakter."),
+  kabupaten: z.string().min(3, "Kabupaten minimal 3 karakter."),
+  provinsi: z.string().min(3, "Provinsi minimal 3 karakter."),
   telepon: z.string().min(9, "Nomor telepon minimal 9 karakter."),
   email: z.string().email("Format email tidak valid."),
 });
@@ -39,6 +42,9 @@ export function SetelanForm({ dataAwal }: SetelanFormProps) {
       namaDesa: dataAwal?.namaDesa || '',
       deskripsiSitus: dataAwal?.deskripsiSitus || '',
       alamat: dataAwal?.kontak?.alamat || '',
+      kecamatan: dataAwal?.kontak?.kecamatan || '',
+      kabupaten: dataAwal?.kontak?.kabupaten || '',
+      provinsi: dataAwal?.kontak?.provinsi || '',
       telepon: dataAwal?.kontak?.telepon || '',
       email: dataAwal?.kontak?.email || '',
     },
@@ -52,6 +58,9 @@ export function SetelanForm({ dataAwal }: SetelanFormProps) {
         deskripsiSitus: data.deskripsiSitus,
         kontak: {
             alamat: data.alamat,
+            kecamatan: data.kecamatan,
+            kabupaten: data.kabupaten,
+            provinsi: data.provinsi,
             telepon: data.telepon,
             email: data.email,
         }
@@ -121,14 +130,55 @@ export function SetelanForm({ dataAwal }: SetelanFormProps) {
                     name="alamat"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Alamat Lengkap</FormLabel>
+                        <FormLabel>Alamat Jalan</FormLabel>
                         <FormControl>
-                            <Input placeholder="Jl. Raya Desa No. 1..." {...field} />
+                            <Input placeholder="Jl. Raya Desa No. 1" {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
                     )}
                     />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <FormField
+                        control={form.control}
+                        name="kecamatan"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Kecamatan</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Kec. Digital" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="kabupaten"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Kabupaten/Kota</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Kab. Cerdas" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="provinsi"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Provinsi</FormLabel>
+                            <FormControl>
+                                <Input placeholder="Prov. Teknologi" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                          <FormField
                         control={form.control}
