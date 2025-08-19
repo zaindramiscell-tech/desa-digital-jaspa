@@ -10,7 +10,7 @@ import { BeritaClient, BeritaTulis, tambahBerita, updateBerita } from '@/lib/ber
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import Image from 'next/image';
@@ -151,18 +151,21 @@ export function BeritaForm({ berita }: BeritaFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* Kolom Kiri - Gambar */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
             <Card>
-              <CardContent className="pt-6">
+               <CardHeader>
+                  <CardTitle className="text-lg">Gambar Utama</CardTitle>
+               </CardHeader>
+              <CardContent>
                 <FormItem>
-                  <FormLabel>Gambar Berita</FormLabel>
                   <Tabs value={imageSource} onValueChange={(value) => {
                       const newSource = value as 'upload' | 'url';
                       setImageSource(newSource);
                       form.setValue('gambar', null);
                       form.setValue('gambarUrl', '');
+                      setPreview(null);
                   }}>
                     <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="upload"><Upload className="mr-2 h-4 w-4" /> Unggah</TabsTrigger>
@@ -174,6 +177,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                         name="gambar"
                         render={() => (
                           <FormItem>
+                             <FormLabel className="sr-only">Unggah File Gambar</FormLabel>
                             <FormControl>
                               <Input type="file" accept="image/*" onChange={handleImageChange} disabled={imageSource !== 'upload'} />
                             </FormControl>
@@ -188,6 +192,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                         name="gambarUrl"
                         render={({ field }) => (
                           <FormItem>
+                             <FormLabel className="sr-only">URL Gambar</FormLabel>
                             <FormControl>
                               <Input
                                 placeholder="https://..."
@@ -195,8 +200,8 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                                 disabled={imageSource !== 'url'}
                               />
                             </FormControl>
-                            <FormDescription>
-                              Gunakan tautan gambar langsung atau dari Google Drive.
+                            <FormDescription className="text-xs">
+                              Gunakan tautan dari Google Drive atau sumber lain.
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -204,27 +209,27 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                         />
                     </TabsContent>
                   </Tabs>
-                  {form.formState.errors.gambar && <p className="text-sm font-medium text-destructive">{form.formState.errors.gambar.message?.toString()}</p>}
+                  {form.formState.errors.gambar && <p className="text-sm font-medium text-destructive mt-2">{form.formState.errors.gambar.message?.toString()}</p>}
                 </FormItem>
+                 {preview && (
+                    <div className="mt-4">
+                      <FormLabel>Pratinjau</FormLabel>
+                      <div className="relative w-full h-48 mt-2 rounded-md border overflow-hidden">
+                          <Image src={preview} alt="Preview" fill style={{ objectFit: 'cover' }} onError={() => setPreview('/placeholder.png')} />
+                      </div>
+                    </div>
+                )}
               </CardContent>
             </Card>
-
-            {preview && (
-              <Card>
-                <CardContent className="pt-6">
-                  <FormLabel>Pratinjau Gambar</FormLabel>
-                  <div className="relative w-full h-48 mt-2 rounded-md border overflow-hidden">
-                      <Image src={preview} alt="Preview" fill style={{ objectFit: 'cover' }} onError={() => setPreview('/placeholder.png')} />
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Kolom Kanan - Judul dan Isi */}
           <div className="lg:col-span-2">
             <Card>
-              <CardContent className="pt-6 space-y-6">
+               <CardHeader>
+                  <CardTitle className="text-lg">Konten Berita</CardTitle>
+               </CardHeader>
+              <CardContent className="space-y-6">
                 <FormField
                   control={form.control}
                   name="judul"
@@ -232,7 +237,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                     <FormItem>
                       <FormLabel>Judul Berita</FormLabel>
                       <FormControl>
-                        <Input placeholder="Masukkan judul berita..." {...field} className="text-lg" />
+                        <Input placeholder="Apa yang terjadi di desa hari ini?" {...field} className="text-lg" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

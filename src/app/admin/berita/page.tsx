@@ -39,14 +39,13 @@ export default async function AdminBeritaPage() {
           <TableBody>
             {daftarBerita.length > 0 ? (
               daftarBerita.map((berita) => {
-                // To prevent hydration mismatch, ensure date formatting is consistent
-                const date = new Date(berita.tanggalPublikasi.toDate());
-                const tanggal = new Date(date.getTime() + date.getTimezoneOffset() * 60000).toLocaleDateString('id-ID', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                  timeZone: 'UTC'
-                });
+                const date = berita.tanggalPublikasi.toDate();
+                const tanggal = new Intl.DateTimeFormat('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    timeZone: 'UTC',
+                }).format(date);
                 
                 return (
                   <TableRow key={berita.id}>

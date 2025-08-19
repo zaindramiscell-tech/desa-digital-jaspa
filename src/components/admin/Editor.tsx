@@ -9,8 +9,6 @@ import Header from '@editorjs/header';
 import List from '@editorjs/list';
 // @ts-ignore
 import LinkTool from '@editorjs/link';
-// @ts-ignore
-import Paragraph from '@editorjs/paragraph';
 
 interface EditorProps {
   data: OutputData;
@@ -26,10 +24,6 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
       const editor = new EditorJS({
         holder: holder,
         tools: {
-          paragraph: {
-            class: Paragraph,
-            inlineToolbar: true,
-          },
           header: {
             class: Header,
             inlineToolbar: true,

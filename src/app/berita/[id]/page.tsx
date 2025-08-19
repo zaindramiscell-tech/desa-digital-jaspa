@@ -73,14 +73,13 @@ export default async function BeritaDetailPage({ params }: { params: { id: strin
       contentHtml = edjsParser.parse(berita.isi).join('');
   }
 
-  // Use UTC to prevent hydration errors
-  const date = new Date(berita.tanggalPublikasi.toDate());
-  const tanggal = new Date(date.getTime() + date.getTimezoneOffset() * 60000).toLocaleDateString('id-ID', {
+  const date = berita.tanggalPublikasi.toDate();
+  const tanggal = new Intl.DateTimeFormat('id-ID', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-    timeZone: 'UTC'
-  });
+    timeZone: 'UTC',
+  }).format(date);
 
    const beritaTerkaitClient: BeritaClient[] = beritaTerkait.map(b => ({
     ...b,

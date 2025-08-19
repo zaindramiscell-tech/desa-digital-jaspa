@@ -28,15 +28,13 @@ function getFirstParagraph(content: any): string {
 export function BeritaCard({ berita }: BeritaCardProps) {
   const ringkasan = getFirstParagraph(berita.isi);
   
-  // To prevent hydration mismatch, ensure date formatting is consistent
-  // between server and client by using a specific timezone like UTC.
   const date = new Date(berita.tanggalPublikasi);
-  const tanggal = new Date(date.getTime() + date.getTimezoneOffset() * 60000).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC'
-  });
+  const tanggal = new Intl.DateTimeFormat('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+  }).format(date);
 
   return (
     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col group hover:-translate-y-2">
