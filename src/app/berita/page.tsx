@@ -1,11 +1,40 @@
-import { getSemuaBerita } from '@/lib/berita';
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { getSemuaBerita, BeritaClient } from '@/lib/berita';
 import { BeritaCard } from '@/components/berita/BeritaCard';
 import Image from 'next/image';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
-export const revalidate = 0; // Revalidate data on every request
+export default function BeritaPage() {
+  const [daftarBerita, setDaftarBerita] = useState<BeritaClient[]>([]);
+  const [beritaTampil, setBeritaTampil] = useState<BeritaClient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
-export default async function BeritaPage() {
-  const daftarBerita = await getSemuaBerita();
+  useEffect(() => {
+    async function fetchBerita() {
+      setIsLoading(true);
+      const beritaDariDb = await getSemuaBerita();
+      const beritaClient = beritaDariDb.map(b => ({
+        ...b,
+        tanggalPublikasi: b.tanggalPublikasi.toDate().toISOString(),
+      }));
+      setDaftarBerita(beritaClient);
+      setBeritaTampil(beritaClient);
+      setIsLoading(false);
+    }
+    fetchBerita();
+  }, []);
+
+  useEffect(() => {
+    const hasilFilter = daftarBerita.filter(berita =>
+      berita.judul.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setBeritaTampil(hasilFilter);
+  }, [searchTerm, daftarBerita]);
 
   return (
     <>
@@ -30,18 +59,34 @@ export default async function BeritaPage() {
       </section>
 
       <div className="container mx-auto px-4 py-16 md:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {daftarBerita.length > 0 ? (
-            daftarBerita.map((berita) => (
-              <BeritaCard key={berita.id} berita={{
-                ...berita,
-                tanggalPublikasi: berita.tanggalPublikasi.toDate().toISOString(),
-              }} />
-            ))
-          ) : (
-            <p>Belum ada berita yang dipublikasikan.</p>
-          )}
+        <div className="mb-12 max-w-lg mx-auto">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Cari berita..."
+              className="w-full pl-10 text-base"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
+
+        {isLoading ? (
+           <div className="text-center">Memuat berita...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {beritaTampil.length > 0 ? (
+              beritaTampil.map((berita) => (
+                <BeritaCard key={berita.id} berita={berita} />
+              ))
+            ) : (
+              <p className="text-center md:col-span-2 lg:col-span-3">
+                {searchTerm ? `Tidak ada berita yang cocok dengan "${searchTerm}".` : "Belum ada berita yang dipublikasikan."}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

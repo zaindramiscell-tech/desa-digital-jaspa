@@ -61,13 +61,6 @@ const seedBerita = async () => {
     }
 };
 
-const convertBeritaToClient = (berita: Berita): BeritaClient => {
-    return {
-        ...berita,
-        tanggalPublikasi: berita.tanggalPublikasi.toDate().toISOString(),
-    };
-};
-
 
 // Mengambil semua berita
 export const getSemuaBerita = async (): Promise<Berita[]> => {
