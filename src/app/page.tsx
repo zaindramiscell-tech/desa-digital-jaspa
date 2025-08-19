@@ -66,7 +66,7 @@ export default function Home() {
       description: "Ikuti perkembangan dan kegiatan terbaru yang terjadi di desa kita.",
       buttonText: "Lihat Semua Berita",
       buttonLink: "/berita",
-      imageUrl: "https://images.unsplash.com/photo-1516056334382-e21541852178?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      imageUrl: "https://drive.google.com/uc?export=view&id=19EapdaQv2pBIgCD7547qvfZo0JIq65kV",
       imageHint: "community meeting"
     },
     {
