@@ -103,6 +103,9 @@ Struktur folder utama dari proyek ini adalah sebagai berikut:
     ```
     Aplikasi akan tersedia di [http://localhost:9002](http://localhost:9002).
 
+3.  **Mengisi Database dengan Data Awal (Seeding):**
+    Setelah aplikasi berjalan, buka peramban Anda dan kunjungi rute `/admin/setup`. Halaman ini akan secara otomatis mengisi (seed) database Firestore Anda dengan data contoh untuk semua fitur, termasuk berita, profil, dan lainnya. **Ini hanya perlu dilakukan sekali saat pertama kali menyiapkan proyek.**
+
 ---
 
 ## 6. Konfigurasi Firebase
