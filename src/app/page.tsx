@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Image from "next/image";
@@ -6,12 +10,25 @@ import { ArrowRight, BookOpen, Lightbulb, Newspaper } from "lucide-react";
 import { getSemuaBerita } from "@/lib/berita";
 import { BeritaCard } from "@/components/berita/BeritaCard";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { useState, useEffect } from 'react';
+import type { Berita } from "@/lib/berita";
 
 
-export const revalidate = 0;
+export default function Home() {
+  const [daftarBerita, setDaftarBerita] = useState<Berita[]>([]);
+  const plugin = useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: true })
+  );
 
-export default async function Home() {
-  const daftarBerita = (await getSemuaBerita()).slice(0, 3);
+  useEffect(() => {
+    async function fetchBerita() {
+      const berita = await getSemuaBerita();
+      setDaftarBerita(berita.slice(0,3));
+    }
+    fetchBerita();
+  }, []);
+
 
   const programs = [
     {
@@ -65,9 +82,12 @@ export default async function Home() {
       <section className="relative w-full">
          <Carousel
           className="w-full"
+          plugins={[plugin.current]}
           opts={{
             loop: true,
           }}
+          onMouseEnter={plugin.current.stop}
+          onMouseLeave={plugin.current.reset}
         >
           <CarouselContent>
             {heroSlides.map((slide, index) => (
