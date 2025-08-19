@@ -19,23 +19,29 @@ export interface DataDemografi {
 const docRef = doc(db, 'dataDesa', 'demografi');
 
 // Mengambil data demografi
-export const getDataDemografi = async (): Promise<DataDemografi | null> => {
+export const getDataDemografi = async (): Promise<DataDemografi> => {
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     return { id: docSnap.id, ...docSnap.data() } as DataDemografi;
   }
-  // Mengembalikan data default jika tidak ada di database
-  return {
-    totalPenduduk: 0,
-    jumlahPria: 0,
-    jumlahWanita: 0,
-    jumlahKK: 0,
+  
+  // Data default jika tidak ada di database
+  const defaultData: DataDemografi = {
+    totalPenduduk: 2580,
+    jumlahPria: 1250,
+    jumlahWanita: 1330,
+    jumlahKK: 750,
     komposisiUsia: {
-        "0-17": 0,
-        "18-55": 0,
-        "55+": 0,
+        "0-17": 600,
+        "18-55": 1500,
+        "55+": 480,
     }
   };
+
+  // Simpan data default ke Firestore jika dokumen belum ada
+  await setDoc(docRef, defaultData);
+  
+  return { id: 'demografi', ...defaultData };
 };
 
 // Memperbarui data demografi
