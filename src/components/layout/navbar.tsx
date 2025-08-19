@@ -5,9 +5,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Mountain } from "lucide-react";
+import { usePathname } from 'next/navigation';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Hide navbar on admin routes
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   const navLinks = [
     { href: "/", label: "Beranda" },
@@ -15,7 +22,7 @@ export function Navbar() {
     { href: "/berita", label: "Berita" },
     { href: "/#program", label: "Program Kerja" },
     { href: "/data", label: "Data Desa" },
-    { href: "/admin/berita", label: "Admin Berita"},
+    { href: "/admin/berita", label: "Admin"},
   ];
 
   return (
