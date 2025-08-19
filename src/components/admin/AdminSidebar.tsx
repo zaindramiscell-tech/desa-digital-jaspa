@@ -1,13 +1,16 @@
+
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Newspaper, BarChart3, Mountain, UserSquare } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Newspaper, BarChart3, Mountain, UserSquare, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-
+import { getAuth, signOut } from "firebase/auth";
+import { useToast } from "@/hooks/use-toast";
+import { app } from "@/lib/firebase/config";
 
 const navLinks = [
   { href: "/admin/berita", label: "Manajemen Berita", icon: Newspaper },
@@ -17,16 +20,34 @@ const navLinks = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { toast } = useToast();
+  const auth = getAuth(app);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({ title: "Berhasil", description: "Anda telah keluar." });
+      router.push('/');
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Gagal",
+        description: "Terjadi kesalahan saat keluar.",
+      });
+    }
+  };
 
   const SidebarContent = () => (
-     <div className="flex h-full max-h-screen flex-col gap-2">
+     <div className="flex h-full max-h-screen flex-col">
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <Mountain className="h-6 w-6 text-primary" />
             <span className="">Desa Digital</span>
           </Link>
         </div>
-        <div className="flex-1">
+        <div className="flex-1 overflow-auto py-2">
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
             {navLinks.map((link) => (
               <Link
@@ -43,6 +64,12 @@ export default function AdminSidebar() {
             ))}
           </nav>
         </div>
+        <div className="mt-auto p-4 border-t">
+          <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Keluar
+          </Button>
+        </div>
       </div>
   );
 
@@ -52,7 +79,7 @@ export default function AdminSidebar() {
       <aside className="hidden border-r bg-background md:block md:w-64">
         <SidebarContent />
       </aside>
-       <header className="md:hidden flex h-14 items-center gap-4 border-b bg-muted/40 px-6 fixed top-16 left-0 right-0 z-40">
+       <header className="md:hidden flex h-14 items-center gap-4 border-b bg-muted/40 px-6 fixed top-0 left-0 right-0 z-40 bg-background">
          <Sheet>
             <SheetTrigger asChild>
               <Button

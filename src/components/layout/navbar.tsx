@@ -1,15 +1,29 @@
+
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Mountain } from "lucide-react";
 import { usePathname } from 'next/navigation';
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { app } from "@/lib/firebase/config";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const auth = getAuth(app);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [auth]);
 
   // Hide navbar on admin, login, and register routes
   if (pathname.startsWith('/admin') || pathname === '/login' || pathname === '/register') {
@@ -22,8 +36,11 @@ export function Navbar() {
     { href: "/berita", label: "Berita" },
     { href: "/#program", label: "Program Kerja" },
     { href: "/data", label: "Data Desa" },
-    { href: "/login", label: "Admin"},
   ];
+
+  const adminLink = user ? { href: "/admin/berita", label: "Admin" } : { href: "/login", label: "Login"};
+
+  const allLinks = [...navLinks, adminLink];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -33,7 +50,7 @@ export function Navbar() {
           <span className="text-foreground">Desa Digital</span>
         </Link>
         <nav className="hidden md:flex gap-6">
-          {navLinks.map((link) => (
+          {allLinks.map((link) => (
             <Link key={link.href} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               {link.label}
             </Link>
@@ -57,7 +74,7 @@ export function Navbar() {
                   <Mountain className="h-6 w-6 text-primary" />
                   <span className="text-foreground">Desa Digital</span>
                 </Link>
-                {navLinks.map((link) => (
+                {allLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
