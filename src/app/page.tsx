@@ -3,31 +3,13 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpen, Lightbulb, Newspaper } from "lucide-react";
+import { getSemuaBerita, Berita } from "@/lib/berita";
+import { BeritaCard } from "@/components/berita/BeritaCard";
 
-export default function Home() {
-  const news = [
-    {
-      id: "1",
-      title: "Musyawarah Desa Membahas Pembangunan Infrastruktur",
-      description: "Warga desa antusias mengikuti musyawarah untuk rencana pembangunan jalan dan irigasi baru.",
-      image: "https://placehold.co/400x300.png",
-      aiHint: "community meeting",
-    },
-    {
-      id: "2",
-      title: "Pelatihan UMKM Digital untuk Ibu-Ibu PKK",
-      description: "Inisiatif baru untuk meningkatkan keterampilan digital dan pemasaran online bagi para pelaku UMKM di desa.",
-      image: "https://placehold.co/400x300.png",
-      aiHint: "digital training",
-    },
-    {
-      id: "3",
-      title: "Kerja Bakti Membersihkan Lingkungan Desa",
-      description: "Semangat gotong royong warga dalam menjaga kebersihan dan keindahan lingkungan desa.",
-      image: "https://placehold.co/400x300.png",
-      aiHint: "community service",
-    },
-  ];
+export const revalidate = 0;
+
+export default async function Home() {
+  const daftarBerita = (await getSemuaBerita()).slice(0, 3);
 
   const programs = [
     {
@@ -84,22 +66,13 @@ export default function Home() {
             </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {news.map((item) => (
-              <Card key={item.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
-                <CardHeader className="p-0">
-                  <Image src={item.image} alt={item.title} width={400} height={300} className="w-full h-48 object-cover" data-ai-hint={item.aiHint} />
-                </CardHeader>
-                <CardContent className="p-6 flex-grow">
-                  <CardTitle className="font-headline mb-2">{item.title}</CardTitle>
-                  <CardDescription>{item.description}</CardDescription>
-                </CardContent>
-                <CardFooter className="p-6 pt-0">
-                  <Button asChild variant="link" className="p-0 text-primary hover:text-accent">
-                    <Link href={`/berita/${item.id}`}>Baca Selengkapnya <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+            {daftarBerita.length > 0 ? (
+                daftarBerita.map((berita) => (
+                    <BeritaCard key={berita.id} berita={berita} />
+                ))
+            ) : (
+                <p>Belum ada berita yang dipublikasikan.</p>
+            )}
           </div>
         </div>
       </section>

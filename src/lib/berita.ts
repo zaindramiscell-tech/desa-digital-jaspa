@@ -1,5 +1,5 @@
 import { db, storage } from './firebase/config';
-import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, Timestamp, query, orderBy, where, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, Timestamp, query, orderBy, where, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 export interface Berita {
@@ -17,11 +17,44 @@ export interface BeritaTulis {
   gambarUrl?: string;
 }
 
-
 const beritaCollection = collection(db, 'berita');
+
+const seedBerita = async () => {
+    const snapshot = await getDocs(query(beritaCollection));
+    if (snapshot.empty) {
+        console.log("Koleksi 'berita' kosong, menambahkan data mock...");
+        const batch = writeBatch(db);
+        const mockBerita = [
+            {
+                judul: "Musyawarah Desa Membahas Pembangunan Infrastruktur",
+                isi: "Warga desa antusias mengikuti musyawarah untuk rencana pembangunan jalan dan irigasi baru. Musyawarah ini dihadiri oleh kepala desa, perangkat desa, dan perwakilan warga dari setiap RW. Keputusan bersama diambil untuk memprioritaskan perbaikan jalan utama desa yang sudah rusak parah.",
+                gambarUrl: "https://placehold.co/800x400.png",
+            },
+            {
+                judul: "Pelatihan UMKM Digital untuk Ibu-Ibu PKK",
+                isi: "Inisiatif baru untuk meningkatkan keterampilan digital dan pemasaran online bagi para pelaku UMKM di desa. Pelatihan ini mencakup materi tentang penggunaan media sosial untuk promosi, dasar-dasar fotografi produk, dan cara menggunakan platform e-commerce untuk menjangkau pasar yang lebih luas.",
+                gambarUrl: "https://placehold.co/800x400.png",
+            },
+            {
+                judul: "Kerja Bakti Membersihkan Lingkungan Desa",
+                isi: "Semangat gotong royong warga dalam menjaga kebersihan dan keindahan lingkungan desa. Kegiatan ini rutin diadakan setiap hari Jumat pagi, menyasar area-area publik seperti taman desa, selokan, dan tepi jalan. Partisipasi warga sangat tinggi, menunjukkan kepedulian terhadap lingkungan.",
+                gambarUrl: "https://placehold.co/800x400.png",
+            },
+        ];
+
+        mockBerita.forEach(berita => {
+            const docRef = doc(beritaCollection);
+            batch.set(docRef, { ...berita, tanggalPublikasi: serverTimestamp() });
+        });
+
+        await batch.commit();
+        console.log("Data mock berita berhasil ditambahkan.");
+    }
+};
 
 // Mengambil semua berita
 export const getSemuaBerita = async (): Promise<Berita[]> => {
+  await seedBerita(); // Panggil fungsi seeding
   const q = query(beritaCollection, orderBy('tanggalPublikasi', 'desc'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({
