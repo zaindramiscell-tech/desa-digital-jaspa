@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import Image from 'next/image';
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
   judul: z.string().min(5, { message: "Judul harus memiliki setidaknya 5 karakter." }),
@@ -127,6 +128,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
               <FormMessage />
             </FormItem>
             <Button type="submit" disabled={isSubmitting}>
+               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isSubmitting ? 'Menyimpan...' : (berita ? 'Simpan Perubahan' : 'Publikasikan Berita')}
             </Button>
           </form>

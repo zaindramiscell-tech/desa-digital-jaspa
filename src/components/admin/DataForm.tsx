@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
   totalPenduduk: z.coerce.number().min(0, "Jumlah tidak boleh negatif"),
@@ -184,6 +185,7 @@ export function DataForm({ dataAwal }: DataFormProps) {
             </Card>
 
             <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
             </Button>
           </form>

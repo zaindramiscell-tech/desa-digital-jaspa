@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
   sejarah: z.string().min(20, "Sejarah harus memiliki setidaknya 20 karakter."),
@@ -118,6 +119,7 @@ export function ProfilForm({ dataAwal }: ProfilFormProps) {
             />
 
             <Button type="submit" disabled={isSubmitting}>
+               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
             </Button>
           </form>
