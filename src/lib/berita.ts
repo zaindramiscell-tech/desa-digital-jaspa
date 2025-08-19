@@ -6,7 +6,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 export interface Berita {
   id: string;
   judul: string;
-  isi: string;
+  isi: any; // Can be a string or Editor.js data
   gambarUrl: string;
   tanggalPublikasi: Timestamp;
 }
@@ -14,7 +14,7 @@ export interface Berita {
 export interface BeritaClient {
     id: string;
     judul: string;
-    isi: string;
+    isi: any;
     gambarUrl: string;
     tanggalPublikasi: string; // Already string for client safety
 }
@@ -22,7 +22,7 @@ export interface BeritaClient {
 // This interface is for writing data to Firestore
 export interface BeritaTulis {
   judul: string;
-  isi: string;
+  isi: any; // Editor.js data object
   gambarUrl?: string | null; // This can be a direct URL from input
   gambar?: File | null; // This is for file upload
 }
@@ -37,17 +37,50 @@ const seedBerita = async () => {
         const mockBerita = [
             {
                 judul: "Musyawarah Desa Membahas Pembangunan Infrastruktur",
-                isi: "Warga desa antusias mengikuti musyawarah untuk rencana pembangunan jalan dan irigasi baru. Musyawarah ini dihadiri oleh kepala desa, perangkat desa, dan perwakilan warga dari setiap RW. Keputusan bersama diambil untuk memprioritaskan perbaikan jalan utama desa yang sudah rusak parah.",
+                isi: {
+                    "time": 1629896400000,
+                    "blocks": [
+                        {
+                            "type": "paragraph",
+                            "data": {
+                                "text": "Warga desa antusias mengikuti musyawarah untuk rencana pembangunan jalan dan irigasi baru. Musyawarah ini dihadiri oleh kepala desa, perangkat desa, dan perwakilan warga dari setiap RW. Keputusan bersama diambil untuk memprioritaskan perbaikan jalan utama desa yang sudah rusak parah."
+                            }
+                        }
+                    ],
+                    "version": "2.22.2"
+                },
                 gambarUrl: "https://images.unsplash.com/photo-1649836751538-f377a2b20884?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtdXN5YXdhcmFoJTIwZGVzYXxlbnwwfHx8fDE3NTU2MTUxODV8MA&ixlib=rb-4.1.0&q=80&w=1080",
             },
             {
                 judul: "Pelatihan UMKM Digital untuk Ibu-Ibu PKK",
-                isi: "Inisiatif baru untuk meningkatkan keterampilan digital dan pemasaran online bagi para pelaku UMKM di desa. Pelatihan ini mencakup materi tentang penggunaan media sosial untuk promosi, dasar-dasar fotografi produk, dan cara menggunakan platform e-commerce untuk menjangkau pasar yang lebih luas.",
+                isi: {
+                    "time": 1629896400000,
+                    "blocks": [
+                        {
+                            "type": "paragraph",
+                            "data": {
+                                "text": "Inisiatif baru untuk meningkatkan keterampilan digital dan pemasaran online bagi para pelaku UMKM di desa. Pelatihan ini mencakup materi tentang penggunaan media sosial untuk promosi, dasar-dasar fotografi produk, dan cara menggunakan platform e-commerce untuk menjangkau pasar yang lebih luas."
+                            }
+                        }
+                    ],
+                    "version": "2.22.2"
+                },
                 gambarUrl: "https://images.unsplash.com/photo-1602827114685-efbb2717da9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZWxhdGloYW4lMjBkaWdpdGFsJTIwJTIwfGVufDB8fHx8MTc1NTYxNTA3NHww&ixlib=rb-4.1.0&q=80&w=1080",
             },
             {
                 judul: "Kerja Bakti Membersihkan Lingkungan Desa",
-                isi: "Semangat gotong royong warga dalam menjaga kebersihan dan keindahan lingkungan desa. Kegiatan ini rutin diadakan setiap hari Jumat pagi, menyasar area-area publik seperti taman desa, selokan, dan tepi jalan. Partisipasi warga sangat tinggi, menunjukkan kepedulian terhadap lingkungan.",
+                isi: {
+                    "time": 1629896400000,
+                    "blocks": [
+                        {
+                            "type": "paragraph",
+                            "data": {
+                                "text": "Semangat gotong royong warga dalam menjaga kebersihan dan keindahan lingkungan desa. Kegiatan ini rutin diadakan setiap hari Jumat pagi, menyasar area-area publik seperti taman desa, selokan, dan tepi jalan. Partisipasi warga sangat tinggi, menunjukkan kepedulian terhadap lingkungan."
+                            }
+                        }
+                    ],
+                    "version": "2.22.2"
+                },
                 gambarUrl: "https://images.unsplash.com/photo-1599839958882-748924f70a2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxrZXJqYSUyMGJha3RpfGVufDB8fHx8MTc1NTYxNTExOXww&ixlib=rb-4.1.0&q=80&w=1080",
             },
         ];

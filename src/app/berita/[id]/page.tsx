@@ -1,13 +1,31 @@
+
 import { getBeritaById, getBeritaTerbaru, Berita, BeritaClient } from '@/lib/berita';
 import Image from 'next/image';
 import { Calendar, Newspaper } from 'lucide-react';
 import { ShareButtons } from '@/components/berita/ShareButtons';
 import { BeritaCard } from '@/components/berita/BeritaCard';
 import type { Metadata, ResolvingMetadata } from 'next'
+import edjsHTML from 'editorjs-html';
+
+const edjsParser = edjsHTML();
 
 type Props = {
   params: { id: string }
 }
+
+function getFirstParagraph(content: any): string {
+    if (typeof content === 'string') {
+        return content.substring(0, 155) + '...';
+    }
+    if (content && content.blocks) {
+        const firstParagraph = content.blocks.find((block: any) => block.type === 'paragraph');
+        if (firstParagraph) {
+            return firstParagraph.data.text.substring(0, 155) + '...';
+        }
+    }
+    return 'Baca selengkapnya...';
+}
+
 
 export async function generateMetadata(
   { params }: Props,
@@ -21,9 +39,9 @@ export async function generateMetadata(
       title: 'Berita Tidak Ditemukan',
     }
   }
-
-  const ringkasan = berita.isi.substring(0, 155) + '...';
  
+  const ringkasan = getFirstParagraph(berita.isi);
+
   return {
     title: berita.judul,
     description: ringkasan,
@@ -46,6 +64,13 @@ export default async function BeritaDetailPage({ params }: { params: { id: strin
         <p>Maaf, berita yang Anda cari tidak ada atau mungkin telah dihapus.</p>
       </div>
     );
+  }
+  
+  let contentHtml = '';
+  if (typeof berita.isi === 'string') {
+      contentHtml = berita.isi.replace(/\n/g, '<br />');
+  } else if (berita.isi && berita.isi.blocks) {
+      contentHtml = edjsParser.parse(berita.isi).join('');
   }
 
   const tanggal = berita.tanggalPublikasi.toDate().toLocaleDateString('id-ID', {
@@ -79,7 +104,7 @@ export default async function BeritaDetailPage({ params }: { params: { id: strin
         </div>
         <div 
           className="prose lg:prose-xl max-w-none text-muted-foreground leading-relaxed" 
-          dangerouslySetInnerHTML={{ __html: berita.isi.replace(/\n/g, '<br />') }}
+          dangerouslySetInnerHTML={{ __html: contentHtml }}
         >
         </div>
 

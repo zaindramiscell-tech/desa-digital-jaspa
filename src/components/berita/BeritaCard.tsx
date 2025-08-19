@@ -12,8 +12,21 @@ interface BeritaCardProps {
   berita: BeritaClient;
 }
 
+function getFirstParagraph(content: any): string {
+    if (typeof content === 'string') {
+        return content.substring(0, 100) + '...';
+    }
+    if (content && content.blocks) {
+        const firstParagraph = content.blocks.find((block: any) => block.type === 'paragraph');
+        if (firstParagraph) {
+            return firstParagraph.data.text.substring(0, 100) + '...';
+        }
+    }
+    return 'Baca selengkapnya...';
+}
+
 export function BeritaCard({ berita }: BeritaCardProps) {
-  const ringkasan = berita.isi.substring(0, 100) + '...';
+  const ringkasan = getFirstParagraph(berita.isi);
   
   const tanggal = new Date(berita.tanggalPublikasi).toLocaleDateString('id-ID', {
     day: 'numeric',

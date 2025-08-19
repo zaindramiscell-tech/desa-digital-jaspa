@@ -1,26 +1,30 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { BeritaClient, BeritaTulis, tambahBerita, updateBerita } from '@/lib/berita';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import Image from 'next/image';
 import { Loader2, Upload, Link2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Editor from './Editor';
+import { OutputData } from '@editorjs/editorjs';
+
 
 const formSchema = z.object({
   judul: z.string().min(5, { message: "Judul harus memiliki setidaknya 5 karakter." }),
-  isi: z.string().min(20, { message: "Isi berita harus memiliki setidaknya 20 karakter." }),
+  isi: z.any().refine((data) => {
+    return data && data.blocks && Array.isArray(data.blocks) && data.blocks.length > 0;
+  }, { message: "Isi berita tidak boleh kosong." }),
   gambarUrl: z.string().optional().or(z.literal('')),
   gambar: z.any().optional(),
 });
@@ -61,7 +65,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       judul: berita?.judul || '',
-      isi: berita?.isi || '',
+      isi: berita?.isi || { blocks: [] },
       gambarUrl: berita?.gambarUrl && !berita.gambarUrl.includes('firebasestorage') ? berita.gambarUrl : '',
       gambar: null,
     },
@@ -176,6 +180,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="isi"
@@ -183,7 +188,11 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                 <FormItem>
                   <FormLabel>Isi Berita</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Tulis isi berita di sini..." className="min-h-[200px]" {...field} />
+                    <Editor 
+                        data={field.value} 
+                        onChange={(data) => field.onChange(data)} 
+                        holder="editorjs-container"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -254,5 +263,3 @@ export function BeritaForm({ berita }: BeritaFormProps) {
     </Card>
   );
 }
-
-    
