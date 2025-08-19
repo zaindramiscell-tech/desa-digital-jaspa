@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, Lightbulb, Newspaper } from "lucide-react";
 import { getSemuaBerita } from "@/lib/berita";
 import { BeritaCard } from "@/components/berita/BeritaCard";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+
 
 export const revalidate = 0;
 
@@ -29,31 +31,76 @@ export default async function Home() {
     },
   ];
 
+  const heroSlides = [
+    {
+      title: "Selamat Datang di Desa Digital",
+      description: "Menuju desa yang maju, mandiri, dan sejahtera melalui inovasi digital.",
+      buttonText: "Jelajahi Desa",
+      buttonLink: "/profil",
+      imageUrl: "https://images.unsplash.com/photo-1672561924208-7762120e7077?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      imageHint: "village landscape"
+    },
+    {
+      title: "Berita & Informasi Terkini",
+      description: "Ikuti perkembangan dan kegiatan terbaru yang terjadi di desa kita.",
+      buttonText: "Lihat Semua Berita",
+      buttonLink: "/berita",
+      imageUrl: "https://images.unsplash.com/photo-1516056334382-e21541852178?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      imageHint: "community meeting"
+    },
+    {
+      title: "Transparansi Data Desa",
+      description: "Akses data demografi dan informasi penting lainnya secara mudah dan terbuka.",
+      buttonText: "Lihat Data Desa",
+      buttonLink: "/data",
+      imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      imageHint: "data dashboard"
+    }
+  ];
+
 
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-[60vh] md:h-[70vh] w-full flex items-center justify-center text-center text-white">
-        <Image
-          src="https://images.unsplash.com/photo-1672561924208-7762120e7077?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          alt="Pemandangan Desa"
-          fill
-          style={{objectFit: 'cover'}}
-          className="z-0"
-          data-ai-hint="village landscape"
-        />
-        <div className="absolute inset-0 bg-black/50 z-10"></div>
-        <div className="z-20 p-4">
-          <h1 className="text-4xl md:text-6xl font-headline font-bold mb-4 drop-shadow-lg">
-            Selamat Datang di Desa Digital
-          </h1>
-          <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 drop-shadow-md">
-            Menuju desa yang maju, mandiri, dan sejahtera melalui inovasi digital.
-          </p>
-          <Button asChild size="lg" className="bg-primary hover:bg-accent">
-            <Link href="/profil">Jelajahi Desa <ArrowRight className="ml-2 h-5 w-5" /></Link>
-          </Button>
-        </div>
+      <section className="relative w-full">
+         <Carousel
+          className="w-full"
+          opts={{
+            loop: true,
+          }}
+        >
+          <CarouselContent>
+            {heroSlides.map((slide, index) => (
+              <CarouselItem key={index}>
+                <div className="relative h-[60vh] md:h-[70vh] w-full flex items-center justify-center text-center text-white">
+                  <Image
+                    src={slide.imageUrl}
+                    alt={slide.title}
+                    fill
+                    style={{objectFit: 'cover'}}
+                    className="z-0"
+                    data-ai-hint={slide.imageHint}
+                    priority={index === 0}
+                  />
+                  <div className="absolute inset-0 bg-black/50 z-10"></div>
+                  <div className="z-20 p-4 max-w-4xl">
+                    <h1 className="text-4xl md:text-6xl font-headline font-bold mb-4 drop-shadow-lg">
+                      {slide.title}
+                    </h1>
+                    <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 drop-shadow-md">
+                      {slide.description}
+                    </p>
+                    <Button asChild size="lg" className="bg-primary hover:bg-accent">
+                      <Link href={slide.buttonLink}>{slide.buttonText} <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                    </Button>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 hidden md:flex" />
+          <CarouselNext className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 hidden md:flex" />
+        </Carousel>
       </section>
 
       {/* Berita Terkini Section */}
