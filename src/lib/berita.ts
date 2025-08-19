@@ -19,11 +19,12 @@ export interface BeritaClient {
     tanggalPublikasi: string; // Already string for client safety
 }
 
+// This interface is for writing data to Firestore
 export interface BeritaTulis {
   judul: string;
   isi: string;
-  gambar?: File | null;
-  gambarUrl?: string;
+  gambarUrl?: string; // This can be a direct URL from input
+  gambar?: File | null; // This is for file upload
 }
 
 const beritaCollection = collection(db, 'berita');
@@ -105,31 +106,33 @@ export const getBeritaById = async (id: string): Promise<Berita | null> => {
 
 // Menambah berita baru
 export const tambahBerita = async (berita: BeritaTulis) => {
-  let gambarUrl = '';
+  let urlToSave = berita.gambarUrl || '';
+
   if (berita.gambar) {
     const storageRef = ref(storage, `berita/${Date.now()}_${berita.gambar.name}`);
     await uploadBytes(storageRef, berita.gambar);
-    gambarUrl = await getDownloadURL(storageRef);
+    urlToSave = await getDownloadURL(storageRef);
   }
   
   return await addDoc(beritaCollection, {
     judul: berita.judul,
     isi: berita.isi,
-    gambarUrl: gambarUrl,
+    gambarUrl: urlToSave,
     tanggalPublikasi: serverTimestamp(),
   });
 };
 
 // Memperbarui berita
-export const updateBerita = async (id: string, berita: BeritaTulis) => {
+export const updateBerita = async (id: string, berita: BeritaTulis, gambarUrlLama?: string) => {
   const docRef = doc(db, 'berita', id);
-  let gambarUrl = berita.gambarUrl || '';
+  let urlToSave = berita.gambarUrl;
 
+  // Jika ada file gambar baru yang di-upload
   if (berita.gambar) {
-    const currentDoc = await getDoc(docRef);
-    if(currentDoc.exists() && currentDoc.data().gambarUrl) {
+    // Hapus gambar lama jika ada
+    if (gambarUrlLama) {
       try {
-        const oldImageRef = ref(storage, currentDoc.data().gambarUrl);
+        const oldImageRef = ref(storage, gambarUrlLama);
         await deleteObject(oldImageRef);
       } catch (error: any) {
         if (error.code !== 'storage/object-not-found') {
@@ -138,19 +141,17 @@ export const updateBerita = async (id: string, berita: BeritaTulis) => {
       }
     }
     
+    // Upload gambar baru
     const storageRef = ref(storage, `berita/${Date.now()}_${berita.gambar.name}`);
     await uploadBytes(storageRef, berita.gambar);
-    gambarUrl = await getDownloadURL(storageRef);
+    urlToSave = await getDownloadURL(storageRef);
   }
 
   const dataToUpdate: any = {
     judul: berita.judul,
     isi: berita.isi,
+    gambarUrl: urlToSave,
   };
-
-  if(berita.gambar) {
-    dataToUpdate.gambarUrl = gambarUrl;
-  }
 
   return await updateDoc(docRef, dataToUpdate);
 };
@@ -162,8 +163,11 @@ export const hapusBerita = async (id: string) => {
   const docSnap = await getDoc(docRef);
   if (docSnap.exists() && docSnap.data().gambarUrl) {
      try {
-        const imageRef = ref(storage, docSnap.data().gambarUrl);
-        await deleteObject(imageRef);
+        // Cek apakah URL dari Firebase Storage
+        if (docSnap.data().gambarUrl.includes('firebasestorage.googleapis.com')) {
+          const imageRef = ref(storage, docSnap.data().gambarUrl);
+          await deleteObject(imageRef);
+        }
       } catch (error: any) {
         if (error.code !== 'storage/object-not-found') {
           console.error("Gagal menghapus gambar:", error);

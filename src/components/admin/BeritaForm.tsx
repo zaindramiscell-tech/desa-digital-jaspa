@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,13 +15,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import Image from 'next/image';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Upload, Link2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const formSchema = z.object({
   judul: z.string().min(5, { message: "Judul harus memiliki setidaknya 5 karakter." }),
   isi: z.string().min(20, { message: "Isi berita harus memiliki setidaknya 20 karakter." }),
+  gambarUrl: z.string().url({ message: "URL tidak valid." }).optional().or(z.literal('')),
   gambar: z.any().optional(),
+}).refine(data => {
+    // For new posts, one of the two must be present.
+    if (!data.id) { // Assuming id is passed for edits
+        return !!data.gambarUrl || !!data.gambar;
+    }
+    return true;
+}, {
+    message: "Anda harus menyediakan URL gambar atau mengunggah file.",
+    path: ["gambarUrl"],
 });
+
+
+type FormValues = z.infer<typeof formSchema>;
 
 interface BeritaFormProps {
   berita?: BeritaClient | null;
@@ -31,12 +46,15 @@ export function BeritaForm({ berita }: BeritaFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [preview, setPreview] = useState<string | null>(berita?.gambarUrl || null);
+  const [imageSource, setImageSource] = useState<'upload' | 'url'>(berita?.gambarUrl && !berita.gambarUrl.includes('firebasestorage') ? 'url' : 'upload');
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       judul: berita?.judul || '',
       isi: berita?.isi || '',
+      gambarUrl: berita?.gambarUrl && !berita.gambarUrl.includes('firebasestorage') ? berita.gambarUrl : '',
+      gambar: null,
     },
   });
 
@@ -45,31 +63,45 @@ export function BeritaForm({ berita }: BeritaFormProps) {
     if (file) {
       setPreview(URL.createObjectURL(file));
       form.setValue('gambar', file);
+      form.setValue('gambarUrl', ''); // Clear URL field if file is selected
     }
   };
+  
+  const urlValue = form.watch('gambarUrl');
 
-  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
+  useEffect(() => {
+    if (imageSource === 'url' && urlValue) {
+      setPreview(urlValue);
+      form.setValue('gambar', null); // Clear file input if URL is being used
+    }
+  }, [urlValue, imageSource, form]);
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsSubmitting(true);
     try {
       const isEditMode = berita && berita.id;
 
-      if (isEditMode) {
-        // Update
-        const beritaData: BeritaTulis = {
+      let beritaData: BeritaTulis;
+
+      if (imageSource === 'url') {
+        beritaData = {
+          judul: data.judul,
+          isi: data.isi,
+          gambarUrl: data.gambarUrl,
+          gambar: null,
+        };
+      } else {
+        beritaData = {
           judul: data.judul,
           isi: data.isi,
           gambar: data.gambar || null,
-          gambarUrl: berita.gambarUrl, // Pass existing URL
         };
-        await updateBerita(berita.id, beritaData);
+      }
+
+      if (isEditMode) {
+        await updateBerita(berita.id, beritaData, berita.gambarUrl);
         toast({ title: "Berhasil", description: "Berita telah berhasil diperbarui." });
       } else {
-        // Create
-        const beritaData: BeritaTulis = {
-          judul: data.judul,
-          isi: data.isi,
-          gambar: data.gambar || null,
-        };
         await tambahBerita(beritaData);
         toast({ title: "Berhasil", description: "Berita baru telah berhasil ditambahkan." });
       }
@@ -121,18 +153,47 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                 </FormItem>
               )}
             />
+            
             <FormItem>
               <FormLabel>Gambar Berita</FormLabel>
-              <FormControl>
-                <Input type="file" accept="image/*" onChange={handleImageChange} />
-              </FormControl>
-              {preview && (
-                <div className="mt-4">
-                  <Image src={preview} alt="Preview" width={200} height={150} className="rounded-md object-cover" />
-                </div>
-              )}
-              <FormMessage />
+              <Tabs value={imageSource} onValueChange={(value) => setImageSource(value as 'upload' | 'url')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="upload"><Upload className="mr-2 h-4 w-4" /> Unggah File</TabsTrigger>
+                  <TabsTrigger value="url"><Link2 className="mr-2 h-4 w-4" /> Gunakan URL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="upload" className="pt-4">
+                  <FormControl>
+                    <Input type="file" accept="image/*" onChange={handleImageChange} disabled={imageSource !== 'upload'} />
+                  </FormControl>
+                </TabsContent>
+                <TabsContent value="url" className="pt-4">
+                   <FormField
+                    control={form.control}
+                    name="gambarUrl"
+                    render={({ field }) => (
+                        <FormControl>
+                            <Input 
+                                placeholder="https://..." 
+                                {...field}
+                                disabled={imageSource !== 'url'} 
+                            />
+                        </FormControl>
+                    )}
+                    />
+                </TabsContent>
+              </Tabs>
+               <FormMessage>{form.formState.errors.gambarUrl?.message}</FormMessage>
             </FormItem>
+
+            {preview && (
+              <div className="mt-4">
+                  <FormLabel>Pratinjau Gambar</FormLabel>
+                <div className="relative w-full max-w-sm h-48 mt-2 rounded-md border overflow-hidden">
+                    <Image src={preview} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                </div>
+              </div>
+            )}
+
             <Button type="submit" disabled={isSubmitting}>
                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isSubmitting ? 'Menyimpan...' : (berita ? 'Simpan Perubahan' : 'Publikasikan Berita')}
