@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Newspaper, BarChart3, Mountain } from "lucide-react";
+import { Newspaper, BarChart3, Mountain, UserSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -12,6 +12,7 @@ import { Menu } from "lucide-react";
 const navLinks = [
   { href: "/admin/berita", label: "Manajemen Berita", icon: Newspaper },
   { href: "/admin/data", label: "Manajemen Data", icon: BarChart3 },
+  { href: "/admin/profil", label: "Manajemen Profil", icon: UserSquare },
 ];
 
 export default function AdminSidebar() {
@@ -33,7 +34,7 @@ export default function AdminSidebar() {
                 href={link.href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                  (pathname === link.href || (link.href !== "/admin/berita" && pathname.startsWith(link.href))) && "bg-muted text-primary"
+                  (pathname.startsWith(link.href)) && "bg-muted text-primary"
                 )}
               >
                 <link.icon className="h-4 w-4" />

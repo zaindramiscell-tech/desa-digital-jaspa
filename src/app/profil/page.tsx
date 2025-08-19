@@ -1,8 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, Target, BookText } from "lucide-react";
 import Image from "next/image";
+import { getProfilDesa } from "@/lib/profilDesa";
 
-export default function ProfilDesa() {
+export const revalidate = 0;
+
+export default async function ProfilDesa() {
+  const profil = await getProfilDesa();
+
   return (
     <>
       <section className="relative h-64 w-full flex items-center justify-center text-center text-white">
@@ -39,10 +44,7 @@ export default function ProfilDesa() {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. 
-              </p>
-              <p>
-                Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet.
+                {profil.sejarah}
               </p>
             </CardContent>
           </Card>
@@ -59,7 +61,7 @@ export default function ProfilDesa() {
               </CardHeader>
               <CardContent className="text-muted-foreground leading-relaxed">
                 <p>
-                  “Terwujudnya Desa yang Maju, Mandiri, Sejahtera, dan Berbasis Digital pada Tahun 2030.”
+                  “{profil.visi}”
                 </p>
               </CardContent>
             </Card>
@@ -75,11 +77,9 @@ export default function ProfilDesa() {
               </CardHeader>
               <CardContent>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground leading-relaxed">
-                  <li>Meningkatkan kualitas pelayanan publik melalui digitalisasi.</li>
-                  <li>Mengembangkan potensi ekonomi lokal dengan dukungan teknologi.</li>
-                  <li>Meningkatkan kualitas sumber daya manusia melalui pendidikan dan pelatihan.</li>
-                  <li>Membangun infrastruktur yang mendukung konektivitas dan kemajuan desa.</li>
-                  <li>Mendorong partisipasi aktif masyarakat dalam pembangunan desa.</li>
+                  {profil.misi.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
                 </ul>
               </CardContent>
             </Card>
