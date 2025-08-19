@@ -6,11 +6,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { getSetelan } from '@/lib/setelan';
 import { ThemeProvider } from '@/components/layout/theme-provider';
 
-// export const metadata: Metadata = {
-//   title: 'Desa Digital',
-//   description: 'Platform informasi desa yang modern, informatif, dan mudah dikelola.',
-// };
-
 export async function generateMetadata(
   {},
   parent: ResolvingMetadata
@@ -19,7 +14,10 @@ export async function generateMetadata(
   const setelan = await getSetelan();
  
   return {
-    title: setelan.namaDesa,
+    title: {
+      default: setelan.namaDesa,
+      template: `%s | ${setelan.namaDesa}`,
+    },
     description: setelan.deskripsiSitus,
   }
 }

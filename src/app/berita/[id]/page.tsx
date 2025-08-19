@@ -1,9 +1,37 @@
-
 import { getBeritaById, getBeritaTerbaru, Berita, BeritaClient } from '@/lib/berita';
 import Image from 'next/image';
 import { Calendar, Newspaper } from 'lucide-react';
 import { ShareButtons } from '@/components/berita/ShareButtons';
 import { BeritaCard } from '@/components/berita/BeritaCard';
+import type { Metadata, ResolvingMetadata } from 'next'
+
+type Props = {
+  params: { id: string }
+}
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const id = params.id
+  const berita = await getBeritaById(id)
+ 
+  if (!berita) {
+    return {
+      title: 'Berita Tidak Ditemukan',
+    }
+  }
+
+  const ringkasan = berita.isi.substring(0, 155) + '...';
+ 
+  return {
+    title: berita.judul,
+    description: ringkasan,
+    openGraph: {
+      images: [berita.gambarUrl || ''],
+    },
+  }
+}
 
 export const revalidate = 0;
 

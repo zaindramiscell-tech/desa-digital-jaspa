@@ -7,12 +7,22 @@ import { BeritaCard } from '@/components/berita/BeritaCard';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import { Metadata } from 'next';
+
+// This is a Client Component, so we can't use generateMetadata.
+// We'll rely on the root layout's metadata, but we can set the title on the client.
+// Note: This won't be as effective for SEO as server-side metadata.
+// A better approach would be to make this a Server Component if possible.
 
 export default function BeritaPage() {
   const [daftarBerita, setDaftarBerita] = useState<BeritaClient[]>([]);
   const [beritaTampil, setBeritaTampil] = useState<BeritaClient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    document.title = 'Berita & Informasi';
+  }, []);
 
   useEffect(() => {
     async function fetchBerita() {
@@ -41,11 +51,12 @@ export default function BeritaPage() {
       <section className="relative h-64 w-full flex items-center justify-center text-center text-white">
         <Image
           src="https://plus.unsplash.com/premium_photo-1690527101950-5bc2b81ca773?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          alt="Berita Desa"
+          alt="Berita & Informasi Desa"
           fill
           style={{objectFit: 'cover'}}
           className="z-0"
           data-ai-hint="news collage"
+          priority
         />
         <div className="absolute inset-0 bg-black/60 z-10"></div>
         <div className="z-20 p-4">
