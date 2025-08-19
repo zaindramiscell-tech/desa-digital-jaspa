@@ -92,10 +92,13 @@ export function BeritaForm({ berita }: BeritaFormProps) {
        setPreview(URL.createObjectURL(fileValue));
        form.setValue('gambarUrl', ''); // Clear URL input if file is being used
     } else if (imageSource === 'url' && !urlValue) {
-       setPreview(null);
+       setPreview(berita?.gambarUrl || null);
+    }
+     else if (!urlValue && !fileValue) {
+      setPreview(berita?.gambarUrl || null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlValue, fileValue, imageSource]);
+  }, [urlValue, fileValue, imageSource, berita?.gambarUrl]);
 
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -171,38 +174,13 @@ export function BeritaForm({ berita }: BeritaFormProps) {
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="isi"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Isi Berita</FormLabel>
-                  <FormControl>
-                    <div className="mt-2 w-full">
-                       <Editor 
-                          data={field.value} 
-                          onChange={(data) => field.onChange(data)} 
-                          holder="editorjs-container"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
             <FormItem>
               <FormLabel>Gambar Berita</FormLabel>
               <Tabs value={imageSource} onValueChange={(value) => {
                   const newSource = value as 'upload' | 'url';
                   setImageSource(newSource);
-                  if (newSource === 'upload') {
-                      form.setValue('gambarUrl', '');
-                      setPreview(berita?.gambarUrl && berita.gambarUrl.includes('firebasestorage') ? berita.gambarUrl : null);
-                  } else {
-                      form.setValue('gambar', null);
-                      setPreview(berita?.gambarUrl && !berita.gambarUrl.includes('firebasestorage') ? berita.gambarUrl : null);
-                  }
+                  form.setValue('gambar', null);
+                  form.setValue('gambarUrl', '');
               }}>
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="upload"><Upload className="mr-2 h-4 w-4" /> Unggah File</TabsTrigger>
@@ -230,18 +208,13 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                       <FormItem>
                         <FormControl>
                           <Input
-                            placeholder="https://drive.google.com/file/d/..."
+                            placeholder="https://... (URL gambar langsung atau Google Drive)"
                             {...field}
                             disabled={imageSource !== 'url'}
-                            onChange={(e) => {
-                                field.onChange(e);
-                                const transformedUrl = transformGoogleDriveUrl(e.target.value);
-                                setPreview(transformedUrl);
-                            }}
                           />
                         </FormControl>
                         <FormDescription>
-                          Tempelkan tautan dari Google Drive. Tautan akan dikonversi otomatis.
+                          Tempelkan tautan gambar langsung atau dari Google Drive.
                         </FormDescription>
                          <FormMessage />
                       </FormItem>
@@ -256,10 +229,30 @@ export function BeritaForm({ berita }: BeritaFormProps) {
               <div className="mt-4">
                   <FormLabel>Pratinjau Gambar</FormLabel>
                 <div className="relative w-full max-w-sm h-48 mt-2 rounded-md border overflow-hidden">
-                    <Image src={preview} alt="Preview" fill style={{ objectFit: 'cover' }} />
+                    <Image src={preview} alt="Preview" fill style={{ objectFit: 'cover' }} onError={() => setPreview('/placeholder.png')} />
                 </div>
               </div>
             )}
+
+             <FormField
+              control={form.control}
+              name="isi"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Isi Berita</FormLabel>
+                  <FormControl>
+                    <div className="mt-2 w-full">
+                       <Editor 
+                          data={field.value} 
+                          onChange={(data) => field.onChange(data)} 
+                          holder="editorjs-container"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <Button type="submit" disabled={isSubmitting}>
                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

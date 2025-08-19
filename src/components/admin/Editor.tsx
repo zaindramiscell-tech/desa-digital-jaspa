@@ -30,10 +30,19 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
           paragraph: {
             class: Paragraph,
             inlineToolbar: true,
+            config: {
+              actions: ['bold', 'italic', 'inlineCode', 'link', 'strikethrough', 'superscript', 'subscript'],
+              defaultAlignment: 'left'
+            }
           },
           header: {
             class: Header,
             inlineToolbar: true,
+            config: {
+                placeholder: 'Masukkan Judul',
+                levels: [2, 3, 4],
+                defaultLevel: 2
+            }
           },
           list: {
             class: List,
