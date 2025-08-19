@@ -12,7 +12,6 @@ import LinkTool from '@editorjs/link';
 // @ts-ignore
 import Paragraph from '@editorjs/paragraph';
 
-
 interface EditorProps {
   data: OutputData;
   onChange: (data: OutputData) => void;
@@ -43,6 +42,9 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
           list: {
             class: List,
             inlineToolbar: true,
+            config: {
+              defaultStyle: 'unordered'
+            }
           },
           linkTool: {
             class: LinkTool,
@@ -67,7 +69,7 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div id={holder} className="w-full min-h-[400px] bg-background border rounded-md px-3 py-2" />;
+  return <div id={holder} className="w-full min-h-[400px] bg-background border rounded-md px-3 py-2 prose prose-sm lg:prose-base max-w-none" />;
 };
 
 export default memo(Editor);
