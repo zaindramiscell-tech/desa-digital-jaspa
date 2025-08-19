@@ -9,4 +9,14 @@ declare module '@editorjs/list' {
     const List: BlockToolConstructable | ToolSettings;
     export default List;
 }
+declare module '@editorjs/link' {
+    import { BlockToolConstructable, ToolSettings } from '@editorjs/editorjs';
+    const LinkTool: BlockToolConstructable | ToolSettings;
+    export default LinkTool;
+}
+declare module 'editorjs-paragraph-with-alignment' {
+    import { BlockToolConstructable, ToolSettings } from '@editorjs/editorjs';
+    const Paragraph: BlockToolConstructable | ToolSettings;
+    export default Paragraph;
+}
 declare module 'editorjs-html';

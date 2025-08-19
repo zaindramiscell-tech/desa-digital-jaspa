@@ -7,6 +7,11 @@ import EditorJS, { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 // @ts-ignore
 import List from '@editorjs/list';
+// @ts-ignore
+import LinkTool from '@editorjs/link';
+// @ts-ignore
+import Paragraph from 'editorjs-paragraph-with-alignment';
+
 
 interface EditorProps {
   data: OutputData;
@@ -22,6 +27,10 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
       const editor = new EditorJS({
         holder: holder,
         tools: {
+          paragraph: {
+            class: Paragraph,
+            inlineToolbar: true,
+          },
           header: {
             class: Header,
             inlineToolbar: true,
@@ -30,6 +39,9 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
             class: List,
             inlineToolbar: true,
           },
+          linkTool: {
+            class: LinkTool,
+          }
         },
         data: data,
         async onChange(api) {
@@ -50,7 +62,7 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div id={holder} className="w-full min-h-[400px] bg-background border rounded-md px-2 py-1" />;
+  return <div id={holder} className="w-full min-h-[400px] bg-background border rounded-md px-3 py-2" />;
 };
 
 export default memo(Editor);
