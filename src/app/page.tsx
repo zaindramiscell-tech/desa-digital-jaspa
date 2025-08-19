@@ -7,24 +7,28 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpen, Lightbulb, Newspaper } from "lucide-react";
-import { getSemuaBerita } from "@/lib/berita";
+import { getBeritaTerbaru } from "@/lib/berita";
 import { BeritaCard } from "@/components/berita/BeritaCard";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { useState, useEffect } from 'react';
-import type { Berita } from "@/lib/berita";
+import type { BeritaClient } from "@/lib/berita";
 
 
 export default function Home() {
-  const [daftarBerita, setDaftarBerita] = useState<Berita[]>([]);
+  const [daftarBerita, setDaftarBerita] = useState<BeritaClient[]>([]);
   const plugin = useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
   );
 
   useEffect(() => {
     async function fetchBerita() {
-      const berita = await getSemuaBerita();
-      setDaftarBerita(berita.slice(0,3));
+      const beritaDariDb = await getBeritaTerbaru(3);
+      const beritaClient = beritaDariDb.map(b => ({
+        ...b,
+        tanggalPublikasi: b.tanggalPublikasi.toDate().toISOString(),
+      }));
+      setDaftarBerita(beritaClient);
     }
     fetchBerita();
   }, []);
@@ -135,13 +139,10 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {daftarBerita.length > 0 ? (
                 daftarBerita.map((berita) => (
-                    <BeritaCard key={berita.id} berita={{
-                      ...berita,
-                      tanggalPublikasi: berita.tanggalPublikasi.toDate().toISOString(),
-                    }} />
+                    <BeritaCard key={berita.id} berita={berita} />
                 ))
             ) : (
-                <p>Belum ada berita yang dipublikasikan.</p>
+                <p>Memuat berita...</p>
             )}
           </div>
         </div>

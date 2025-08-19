@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Calendar } from 'lucide-react';
 import { type BeritaClient } from '@/lib/berita';
 
 interface BeritaCardProps {
@@ -14,6 +14,12 @@ interface BeritaCardProps {
 
 export function BeritaCard({ berita }: BeritaCardProps) {
   const ringkasan = berita.isi.substring(0, 100) + '...';
+  
+  const tanggal = new Date(berita.tanggalPublikasi).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
 
   return (
     <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col group hover:-translate-y-2">
@@ -30,6 +36,10 @@ export function BeritaCard({ berita }: BeritaCardProps) {
         </Link>
       </CardHeader>
       <CardContent className="p-6 flex-grow">
+        <div className="flex items-center text-xs text-muted-foreground mb-2">
+            <Calendar className="w-3.5 h-3.5 mr-1.5" />
+            <span>{tanggal}</span>
+        </div>
         <Link href={`/berita/${berita.id}`} className="hover:text-primary transition-colors">
           <CardTitle className="font-headline mb-2 text-lg leading-tight">{berita.judul}</CardTitle>
         </Link>

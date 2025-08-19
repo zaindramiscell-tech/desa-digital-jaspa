@@ -1,5 +1,6 @@
+
 import { db, storage } from './firebase/config';
-import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, Timestamp, query, orderBy, where, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, Timestamp, query, orderBy, where, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 export interface Berita {
@@ -15,7 +16,7 @@ export interface BeritaClient {
     judul: string;
     isi: string;
     gambarUrl: string;
-    tanggalPublikasi: string;
+    tanggalPublikasi: string; // Already string for client safety
 }
 
 export interface BeritaTulis {
@@ -73,6 +74,25 @@ export const getSemuaBerita = async (): Promise<Berita[]> => {
   } as Berita));
 };
 
+// Mengambil beberapa berita terbaru
+export const getBeritaTerbaru = async (jumlah: number, excludeId?: string): Promise<Berita[]> => {
+    let beritaQuery = query(beritaCollection, orderBy('tanggalPublikasi', 'desc'));
+    
+    const snapshot = await getDocs(beritaQuery);
+    
+    let results = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    } as Berita));
+
+    if(excludeId) {
+        results = results.filter(berita => berita.id !== excludeId);
+    }
+
+    return results.slice(0, jumlah);
+};
+
+
 // Mengambil satu berita berdasarkan ID
 export const getBeritaById = async (id: string): Promise<Berita | null> => {
   const docRef = doc(db, 'berita', id);
@@ -106,7 +126,6 @@ export const updateBerita = async (id: string, berita: BeritaTulis) => {
   let gambarUrl = berita.gambarUrl || '';
 
   if (berita.gambar) {
-    // Optional: Delete old image from storage if you want
     const currentDoc = await getDoc(docRef);
     if(currentDoc.exists() && currentDoc.data().gambarUrl) {
       try {
@@ -119,7 +138,6 @@ export const updateBerita = async (id: string, berita: BeritaTulis) => {
       }
     }
     
-    // Upload new image
     const storageRef = ref(storage, `berita/${Date.now()}_${berita.gambar.name}`);
     await uploadBytes(storageRef, berita.gambar);
     gambarUrl = await getDownloadURL(storageRef);
@@ -130,7 +148,7 @@ export const updateBerita = async (id: string, berita: BeritaTulis) => {
     isi: berita.isi,
   };
 
-  if(berita.gambar) { // Only update URL if a new image was uploaded
+  if(berita.gambar) {
     dataToUpdate.gambarUrl = gambarUrl;
   }
 
@@ -141,7 +159,6 @@ export const updateBerita = async (id: string, berita: BeritaTulis) => {
 export const hapusBerita = async (id: string) => {
   const docRef = doc(db, 'berita', id);
   
-  // Delete image from storage first
   const docSnap = await getDoc(docRef);
   if (docSnap.exists() && docSnap.data().gambarUrl) {
      try {
@@ -154,6 +171,5 @@ export const hapusBerita = async (id: string) => {
       }
   }
 
-  // Then delete the document
   return await deleteDoc(docRef);
 };
