@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import { seedAdminUser } from '@/lib/users';
 
 async function seedDatabase() {
   console.log('Seeding database...');
@@ -24,6 +25,7 @@ async function seedDatabase() {
       getProfilDesa(),    // Seeds if not exists
       getAllSDGs(),       // Seeds if not exists
       seedSetelan(),      // Seeds if not exists
+      seedAdminUser(),    // Seeds admin user
     ]);
     console.log('Database seeding complete!');
     return { success: true, message: 'Database berhasil diisi dengan data awal!' };

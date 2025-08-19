@@ -3,12 +3,34 @@
 
 import { db } from './firebase/config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 export interface UserProfile {
   uid: string;
   email: string | null;
   role: 'admin' | 'user';
 }
+
+export const seedAdminUser = async () => {
+    const auth = getAuth();
+    const email = 'dev@sidepe.com';
+    const password = 'cobasaja';
+
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log(`Pengguna admin mock berhasil dibuat: ${userCredential.user.email}`);
+        await createUserProfile(userCredential.user.uid, userCredential.user.email);
+    } catch (error: any) {
+        if (error.code === 'auth/email-already-in-use') {
+            console.log('Pengguna admin mock sudah ada.');
+        } else {
+            console.error('Gagal membuat pengguna admin mock:', error);
+            // Melempar kembali error agar bisa ditangkap oleh pemanggil
+            throw new Error(`Gagal membuat pengguna admin mock: ${error.message}`);
+        }
+    }
+};
+
 
 // Fungsi untuk membuat profil pengguna saat registrasi
 export const createUserProfile = async (uid: string, email: string | null) => {
