@@ -21,6 +21,28 @@ export interface Setelan {
 
 const docRef = doc(db, 'setelan', 'website');
 
+const defaultData: Setelan = {
+  namaDesa: "Desa Digital",
+  deskripsiSitus: "Platform informasi desa yang modern, informatif, dan mudah dikelola.",
+  kontak: {
+      alamat: "Jl. Raya Desa No. 1",
+      kecamatan: "Kec. Digital",
+      kabupaten: "Kab. Cerdas",
+      provinsi: "Prov. Teknologi",
+      telepon: "(021) 123-4567",
+      email: "kontak@desadigital.id"
+  }
+};
+
+export const seedSetelan = async () => {
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+        console.log("Dokumen setelan tidak ditemukan, membuat data default...");
+        await setDoc(docRef, defaultData);
+    }
+}
+
+
 // Mengambil data setelan website
 export const getSetelan = async (): Promise<Setelan> => {
   const docSnap = await getDoc(docRef);
@@ -28,23 +50,7 @@ export const getSetelan = async (): Promise<Setelan> => {
     return { id: docSnap.id, ...docSnap.data() } as Setelan;
   }
   
-  // Data default jika tidak ada di database
-  const defaultData: Setelan = {
-    namaDesa: "Desa Digital",
-    deskripsiSitus: "Platform informasi desa yang modern, informatif, dan mudah dikelola.",
-    kontak: {
-        alamat: "Jl. Raya Desa No. 1",
-        kecamatan: "Kec. Digital",
-        kabupaten: "Kab. Cerdas",
-        provinsi: "Prov. Teknologi",
-        telepon: "(021) 123-4567",
-        email: "kontak@desadigital.id"
-    }
-  };
-
-  // Simpan data default ke Firestore jika dokumen belum ada
-  await setDoc(docRef, defaultData);
-  
+  // Data default jika tidak ada di database, jangan ditulis.
   return { id: 'website', ...defaultData };
 };
 
