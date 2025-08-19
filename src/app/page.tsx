@@ -78,7 +78,7 @@ export default async function Home() {
                     alt={slide.title}
                     fill
                     style={{objectFit: 'cover'}}
-                    className="z-0"
+                    className="z-0 brightness-75"
                     data-ai-hint={slide.imageHint}
                     priority={index === 0}
                   />
@@ -90,7 +90,7 @@ export default async function Home() {
                     <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 drop-shadow-md">
                       {slide.description}
                     </p>
-                    <Button asChild size="lg" className="bg-primary hover:bg-accent">
+                    <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
                       <Link href={slide.buttonLink}>{slide.buttonText} <ArrowRight className="ml-2 h-5 w-5" /></Link>
                     </Button>
                   </div>
@@ -128,13 +128,13 @@ export default async function Home() {
       </section>
 
       {/* Program Unggulan Section */}
-      <section id="program" className="py-16 md:py-24 bg-card">
+      <section id="program" className="py-16 md:py-24 bg-muted/50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 font-headline">Program Unggulan</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             {programs.map((program, index) => (
-              <Card key={index} className="p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col items-center">
-                <div className="mb-4 p-4 bg-blue-100 rounded-full">
+              <Card key={index} className="p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col items-center bg-card">
+                <div className="mb-4 p-4 bg-primary/10 rounded-full">
                   {program.icon}
                 </div>
                 <CardTitle className="font-headline mb-2">{program.title}</CardTitle>
