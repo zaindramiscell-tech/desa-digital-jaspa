@@ -13,9 +13,12 @@ export interface UserProfile {
 // Fungsi untuk membuat profil pengguna saat registrasi
 export const createUserProfile = async (uid: string, email: string | null) => {
   const userRef = doc(db, 'users', uid);
+  // By default, a new user is an admin.
+  // In a real application, you would want to change this to 'user'
+  // and have a separate process for granting admin rights.
   const newUserProfile: Omit<UserProfile, 'uid'> = {
     email: email,
-    role: 'user', // Peran default untuk pengguna baru
+    role: 'admin', 
   };
   await setDoc(userRef, newUserProfile);
 };

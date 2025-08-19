@@ -1,5 +1,5 @@
 
-import { getSemuaBerita, Berita } from '@/lib/berita';
+import { getSemuaBerita, seedBerita } from '@/lib/berita';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { BeritaActions } from '@/components/admin/BeritaActions';
 export const revalidate = 0; 
 
 export default async function AdminBeritaPage() {
+  await seedBerita();
   const daftarBerita = await getSemuaBerita();
 
   return (

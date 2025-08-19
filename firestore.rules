@@ -1,0 +1,50 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if a user is an authenticated admin
+    function isAdmin() {
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Berita: Public can read, admin can write
+    match /berita/{beritaId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // dataDesa: Public can read, admin can write
+    match /dataDesa/{docId} {
+        allow read: if true;
+        allow write: if isAdmin();
+    }
+
+    // profilDesa: Public can read, admin can write
+    match /profilDesa/{docId} {
+        allow read: if true;
+        allow write: if isAdmin();
+    }
+
+    // sdgs: Public can read, admin can write
+    match /sdgs/{docId} {
+        allow read: if true;
+        allow write: if isAdmin();
+    }
+    
+    // setelan: Public can read, admin can write
+    match /setelan/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Users: Only authenticated users can read their own profile.
+    // Only authenticated admins can write/create user roles.
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if isAdmin();
+      // Allow new users to be created during registration
+      allow create: if request.auth != null;
+    }
+  }
+}

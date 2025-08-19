@@ -15,8 +15,8 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Mountain, ChevronDown } from "lucide-react";
 import { usePathname } from 'next/navigation';
-import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { app } from "@/lib/firebase/config";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
 import { getSetelan } from "@/lib/setelan";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -25,7 +25,6 @@ export function Navbar() {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const auth = getAuth(app);
   const [namaDesa, setNamaDesa] = useState("Desa Digital");
 
   useEffect(() => {
@@ -41,7 +40,7 @@ export function Navbar() {
     fetchSetelan();
 
     return () => unsubscribe();
-  }, [auth]);
+  }, []);
 
   // Hide navbar on admin, login, and register routes
   if (pathname.startsWith('/admin') || pathname === '/login' || pathname === '/register') {

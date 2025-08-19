@@ -30,7 +30,7 @@ export interface BeritaTulis {
 
 const beritaCollection = collection(db, 'berita');
 
-const seedBerita = async () => {
+export const seedBerita = async () => {
     const snapshot = await getDocs(query(beritaCollection));
     if (snapshot.empty) {
         console.log("Koleksi 'berita' kosong, menambahkan data mock...");

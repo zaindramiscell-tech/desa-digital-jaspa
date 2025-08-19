@@ -3,8 +3,8 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { app } from '@/lib/firebase/config';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '@/lib/firebase/config';
 import { useState, useEffect } from 'react';
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { Loader2 } from 'lucide-react';
@@ -26,7 +26,6 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const auth = getAuth(app);
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
@@ -58,7 +57,7 @@ export default function AdminLayout({
 
     return () => unsubscribe();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth]);
+  }, []);
 
   const generateBreadcrumbs = () => {
     const pathParts = pathname.split('/').filter(part => part);
