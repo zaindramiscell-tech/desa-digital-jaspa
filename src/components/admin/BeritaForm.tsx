@@ -22,8 +22,8 @@ import { OutputData } from '@editorjs/editorjs';
 
 const formSchema = z.object({
   judul: z.string().min(5, { message: "Judul harus memiliki setidaknya 5 karakter." }),
-  isi: z.any().refine((data) => {
-    return data && data.blocks && Array.isArray(data.blocks) && data.blocks.length > 0;
+  isi: z.any().refine((data: OutputData) => {
+    return data && Array.isArray(data.blocks) && data.blocks.length > 0;
   }, { message: "Isi berita tidak boleh kosong." }),
   gambarUrl: z.string().optional().or(z.literal('')),
   gambar: z.any().optional(),
@@ -81,28 +81,21 @@ export function BeritaForm({ berita }: BeritaFormProps) {
   };
   
   const urlValue = form.watch('gambarUrl');
+  const fileValue = form.watch('gambar');
 
   useEffect(() => {
     if (imageSource === 'url' && urlValue) {
         const transformedUrl = transformGoogleDriveUrl(urlValue);
         setPreview(transformedUrl);
-        // Set the value in the form to the transformed URL if it changed
-        if (transformedUrl !== urlValue) {
-            form.setValue('gambarUrl', transformedUrl, { shouldValidate: true });
-        }
-        form.setValue('gambar', null);
-    } else if (imageSource === 'upload') {
-       const file = form.getValues('gambar');
-       if (file instanceof File) {
-         setPreview(URL.createObjectURL(file));
-       } else if (berita?.gambarUrl) {
-         setPreview(berita.gambarUrl);
-       } else {
-         setPreview(null);
-       }
+        form.setValue('gambar', null); // Clear file input if URL is being used
+    } else if (imageSource === 'upload' && fileValue instanceof File) {
+       setPreview(URL.createObjectURL(fileValue));
+       form.setValue('gambarUrl', ''); // Clear URL input if file is being used
+    } else if (imageSource === 'url' && !urlValue) {
+       setPreview(null);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlValue, imageSource]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlValue, fileValue, imageSource]);
 
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -110,15 +103,16 @@ export function BeritaForm({ berita }: BeritaFormProps) {
     try {
       const isEditMode = berita && berita.id;
       let beritaData: BeritaTulis;
+
+      if (!data.gambar && !data.gambarUrl && !berita?.gambarUrl) {
+           form.setError('gambar', { type: 'manual', message: 'Anda harus mengunggah gambar atau menyediakan URL.' });
+           setIsSubmitting(false);
+           return;
+      }
       
       const finalGambarUrl = data.gambarUrl ? transformGoogleDriveUrl(data.gambarUrl) : '';
 
       if (imageSource === 'url') {
-        if (!finalGambarUrl && !isEditMode) {
-            form.setError('gambarUrl', { type: 'manual', message: 'URL Gambar atau file unggahan harus diisi.' });
-            setIsSubmitting(false);
-            return;
-        }
         beritaData = {
           judul: data.judul,
           isi: data.isi,
@@ -126,15 +120,11 @@ export function BeritaForm({ berita }: BeritaFormProps) {
           gambar: null,
         };
       } else {
-         if (!data.gambar && !isEditMode) {
-            form.setError('gambar', { type: 'manual', message: 'File unggahan atau URL Gambar harus diisi.' });
-            setIsSubmitting(false);
-            return;
-        }
         beritaData = {
           judul: data.judul,
           isi: data.isi,
           gambar: data.gambar || null,
+          gambarUrl: null, // Ensure URL is null when uploading
         };
       }
 
@@ -147,12 +137,12 @@ export function BeritaForm({ berita }: BeritaFormProps) {
       }
       router.push('/admin/berita');
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "Gagal",
-        description: "Terjadi kesalahan saat menyimpan berita.",
+        description: error.message || "Terjadi kesalahan saat menyimpan berita.",
       });
     } finally {
       setIsSubmitting(false);
@@ -188,11 +178,13 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                 <FormItem>
                   <FormLabel>Isi Berita</FormLabel>
                   <FormControl>
-                    <Editor 
-                        data={field.value} 
-                        onChange={(data) => field.onChange(data)} 
-                        holder="editorjs-container"
-                    />
+                    <div className="mt-2 w-full">
+                       <Editor 
+                          data={field.value} 
+                          onChange={(data) => field.onChange(data)} 
+                          holder="editorjs-container"
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -201,7 +193,17 @@ export function BeritaForm({ berita }: BeritaFormProps) {
             
             <FormItem>
               <FormLabel>Gambar Berita</FormLabel>
-              <Tabs value={imageSource} onValueChange={(value) => setImageSource(value as 'upload' | 'url')} className="w-full">
+              <Tabs value={imageSource} onValueChange={(value) => {
+                  const newSource = value as 'upload' | 'url';
+                  setImageSource(newSource);
+                  if (newSource === 'upload') {
+                      form.setValue('gambarUrl', '');
+                      setPreview(berita?.gambarUrl && berita.gambarUrl.includes('firebasestorage') ? berita.gambarUrl : null);
+                  } else {
+                      form.setValue('gambar', null);
+                      setPreview(berita?.gambarUrl && !berita.gambarUrl.includes('firebasestorage') ? berita.gambarUrl : null);
+                  }
+              }}>
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="upload"><Upload className="mr-2 h-4 w-4" /> Unggah File</TabsTrigger>
                   <TabsTrigger value="url"><Link2 className="mr-2 h-4 w-4" /> Gunakan URL</TabsTrigger>
@@ -231,6 +233,11 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                             placeholder="https://drive.google.com/file/d/..."
                             {...field}
                             disabled={imageSource !== 'url'}
+                            onChange={(e) => {
+                                field.onChange(e);
+                                const transformedUrl = transformGoogleDriveUrl(e.target.value);
+                                setPreview(transformedUrl);
+                            }}
                           />
                         </FormControl>
                         <FormDescription>
@@ -242,6 +249,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                     />
                 </TabsContent>
               </Tabs>
+               {form.formState.errors.gambar && <p className="text-sm font-medium text-destructive">{form.formState.errors.gambar.message?.toString()}</p>}
             </FormItem>
 
             {preview && (
