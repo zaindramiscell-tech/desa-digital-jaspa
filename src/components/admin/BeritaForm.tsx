@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import Image from 'next/image';
 import { Loader2, Upload, Link2 } from 'lucide-react';
@@ -40,16 +40,6 @@ type FormValues = z.infer<typeof formSchema>;
 interface BeritaFormProps {
   berita?: BeritaClient | null;
 }
-
-const transformGoogleDriveUrl = (url: string): string => {
-  if (!url) return url;
-  const gdriveRegex = /https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/;
-  const match = url.match(gdriveRegex);
-  if (match && match[1]) {
-    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-  }
-  return url;
-};
 
 export function BeritaForm({ berita }: BeritaFormProps) {
   const router = useRouter();
@@ -81,11 +71,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
 
   useEffect(() => {
     if (imageSource === 'url' && urlValue) {
-        const transformedUrl = transformGoogleDriveUrl(urlValue);
-        setPreview(transformedUrl);
-        if(transformedUrl !== urlValue) {
-             form.setValue('gambarUrl', transformedUrl, { shouldValidate: true });
-        }
+        setPreview(urlValue);
         form.setValue('gambar', null);
     }
   }, [urlValue, imageSource, form]);
@@ -97,13 +83,11 @@ export function BeritaForm({ berita }: BeritaFormProps) {
 
       let beritaData: BeritaTulis;
       
-      const finalGambarUrl = data.gambarUrl ? transformGoogleDriveUrl(data.gambarUrl) : '';
-
       if (imageSource === 'url') {
         beritaData = {
           judul: data.judul,
           isi: data.isi,
-          gambarUrl: finalGambarUrl,
+          gambarUrl: data.gambarUrl,
           gambar: null,
         };
       } else {
@@ -187,17 +171,18 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                     control={form.control}
                     name="gambarUrl"
                     render={({ field }) => (
-                      <FormControl>
-                        <Input
-                          placeholder="https://..."
-                          {...field}
-                          disabled={imageSource !== 'url'}
-                          onChange={(e) => {
-                            const transformedUrl = transformGoogleDriveUrl(e.target.value);
-                            field.onChange(transformedUrl);
-                          }}
-                        />
-                      </FormControl>
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="https://..."
+                            {...field}
+                            disabled={imageSource !== 'url'}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Masukkan tautan gambar langsung (diakhiri .jpg, .png, dll). Tautan dari Google Photos tidak didukung.
+                        </FormDescription>
+                      </FormItem>
                     )}
                     />
                 </TabsContent>

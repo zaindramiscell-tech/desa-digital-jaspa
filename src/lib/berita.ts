@@ -23,7 +23,7 @@ export interface BeritaClient {
 export interface BeritaTulis {
   judul: string;
   isi: string;
-  gambarUrl?: string; // This can be a direct URL from input
+  gambarUrl?: string | null; // This can be a direct URL from input
   gambar?: File | null; // This is for file upload
 }
 
@@ -129,8 +129,8 @@ export const updateBerita = async (id: string, berita: BeritaTulis, gambarUrlLam
 
   // Jika ada file gambar baru yang di-upload
   if (berita.gambar) {
-    // Hapus gambar lama jika ada
-    if (gambarUrlLama) {
+    // Hapus gambar lama jika ada dan jika itu dari Firebase Storage
+    if (gambarUrlLama && gambarUrlLama.includes('firebasestorage')) {
       try {
         const oldImageRef = ref(storage, gambarUrlLama);
         await deleteObject(oldImageRef);
