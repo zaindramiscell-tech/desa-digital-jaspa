@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { Berita } from '@/lib/berita';
+import { type BeritaClient } from '@/lib/berita';
 
 interface BeritaCardProps {
-  berita: Berita;
+  berita: BeritaClient;
 }
 
 export function BeritaCard({ berita }: BeritaCardProps) {

@@ -1,4 +1,4 @@
-import { getSemuaBerita, Berita } from '@/lib/berita';
+import { getSemuaBerita } from '@/lib/berita';
 import { BeritaCard } from '@/components/berita/BeritaCard';
 import Image from 'next/image';
 
@@ -32,8 +32,11 @@ export default async function BeritaPage() {
       <div className="container mx-auto px-4 py-16 md:py-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {daftarBerita.length > 0 ? (
-            daftarBerita.map((berita: Berita) => (
-              <BeritaCard key={berita.id} berita={berita} />
+            daftarBerita.map((berita) => (
+              <BeritaCard key={berita.id} berita={{
+                ...berita,
+                tanggalPublikasi: berita.tanggalPublikasi.toDate().toISOString(),
+              }} />
             ))
           ) : (
             <p>Belum ada berita yang dipublikasikan.</p>

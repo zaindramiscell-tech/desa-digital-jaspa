@@ -10,6 +10,15 @@ export interface Berita {
   tanggalPublikasi: Timestamp;
 }
 
+export interface BeritaClient {
+    id: string;
+    judul: string;
+    isi: string;
+    gambarUrl: string;
+    tanggalPublikasi: string; // Changed to string
+}
+
+
 export interface BeritaTulis {
   judul: string;
   isi: string;
@@ -51,6 +60,14 @@ const seedBerita = async () => {
         console.log("Data mock berita berhasil ditambahkan.");
     }
 };
+
+const convertBeritaToClient = (berita: Berita): BeritaClient => {
+    return {
+        ...berita,
+        tanggalPublikasi: berita.tanggalPublikasi.toDate().toISOString(),
+    };
+};
+
 
 // Mengambil semua berita
 export const getSemuaBerita = async (): Promise<Berita[]> => {
