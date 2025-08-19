@@ -1,6 +1,7 @@
 import { getBeritaById } from '@/lib/berita';
 import Image from 'next/image';
 import { Calendar } from 'lucide-react';
+import { ShareButtons } from '@/components/berita/ShareButtons';
 
 export const revalidate = 0;
 
@@ -41,6 +42,10 @@ export default async function BeritaDetailPage({ params }: { params: { id: strin
         </div>
         <div className="prose lg:prose-xl max-w-none text-muted-foreground leading-relaxed">
           <p>{berita.isi}</p>
+        </div>
+
+        <div className="mt-12 pt-8 border-t">
+          <ShareButtons title={berita.judul} />
         </div>
       </article>
     </div>
