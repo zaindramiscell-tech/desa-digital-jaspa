@@ -28,10 +28,14 @@ function getFirstParagraph(content: any): string {
 export function BeritaCard({ berita }: BeritaCardProps) {
   const ringkasan = getFirstParagraph(berita.isi);
   
-  const tanggal = new Date(berita.tanggalPublikasi).toLocaleDateString('id-ID', {
+  // To prevent hydration mismatch, ensure date formatting is consistent
+  // between server and client by using a specific timezone like UTC.
+  const date = new Date(berita.tanggalPublikasi);
+  const tanggal = new Date(date.getTime() + date.getTimezoneOffset() * 60000).toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
+    timeZone: 'UTC'
   });
 
   return (

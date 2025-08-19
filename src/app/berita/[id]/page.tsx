@@ -73,10 +73,13 @@ export default async function BeritaDetailPage({ params }: { params: { id: strin
       contentHtml = edjsParser.parse(berita.isi).join('');
   }
 
-  const tanggal = berita.tanggalPublikasi.toDate().toLocaleDateString('id-ID', {
+  // Use UTC to prevent hydration errors
+  const date = new Date(berita.tanggalPublikasi.toDate());
+  const tanggal = new Date(date.getTime() + date.getTimezoneOffset() * 60000).toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
+    timeZone: 'UTC'
   });
 
    const beritaTerkaitClient: BeritaClient[] = beritaTerkait.map(b => ({

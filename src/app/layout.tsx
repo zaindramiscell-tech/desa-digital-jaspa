@@ -1,3 +1,4 @@
+
 import type { Metadata, ResolvingMetadata } from 'next';
 import './globals.css';
 import { Navbar } from '@/components/layout/navbar';
@@ -19,6 +20,7 @@ export async function generateMetadata(
       template: `%s | ${setelan.namaDesa}`,
     },
     description: setelan.deskripsiSitus,
+    icons: null, // Explicitly disable default favicon handling
   }
 }
 

@@ -1,3 +1,4 @@
+
 import { getSemuaBerita, Berita } from '@/lib/berita';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -37,19 +38,26 @@ export default async function AdminBeritaPage() {
           </TableHeader>
           <TableBody>
             {daftarBerita.length > 0 ? (
-              daftarBerita.map((berita) => (
-                <TableRow key={berita.id}>
-                  <TableCell className="font-medium">{berita.judul}</TableCell>
-                  <TableCell>
-                    {berita.tanggalPublikasi.toDate().toLocaleDateString('id-ID', {
-                      day: 'numeric', month: 'long', year: 'numeric'
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <BeritaActions beritaId={berita.id} />
-                  </TableCell>
-                </TableRow>
-              ))
+              daftarBerita.map((berita) => {
+                // To prevent hydration mismatch, ensure date formatting is consistent
+                const date = new Date(berita.tanggalPublikasi.toDate());
+                const tanggal = new Date(date.getTime() + date.getTimezoneOffset() * 60000).toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                  timeZone: 'UTC'
+                });
+                
+                return (
+                  <TableRow key={berita.id}>
+                    <TableCell className="font-medium">{berita.judul}</TableCell>
+                    <TableCell>{tanggal}</TableCell>
+                    <TableCell className="text-right">
+                      <BeritaActions beritaId={berita.id} />
+                    </TableCell>
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={3} className="text-center">
