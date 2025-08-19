@@ -145,13 +145,28 @@ export const updateBerita = async (id: string, berita: BeritaTulis, gambarUrlLam
     const storageRef = ref(storage, `berita/${Date.now()}_${berita.gambar.name}`);
     await uploadBytes(storageRef, berita.gambar);
     urlToSave = await getDownloadURL(storageRef);
+  } else if(berita.gambarUrl === '' && gambarUrlLama && gambarUrlLama.includes('firebasestorage')) {
+     // Case where the URL is cleared, and we need to delete the old storage image
+     try {
+        const oldImageRef = ref(storage, gambarUrlLama);
+        await deleteObject(oldImageRef);
+      } catch (error: any) {
+        if (error.code !== 'storage/object-not-found') {
+          console.error("Gagal menghapus gambar lama:", error);
+        }
+      }
   }
 
   const dataToUpdate: any = {
     judul: berita.judul,
     isi: berita.isi,
-    gambarUrl: urlToSave,
+    tanggalPublikasi: serverTimestamp(), // Keep timestamp updated
   };
+
+  // Only update gambarUrl if it's explicitly provided (as a new URL or after upload)
+  if (urlToSave !== undefined) {
+      dataToUpdate.gambarUrl = urlToSave;
+  }
 
   return await updateDoc(docRef, dataToUpdate);
 };
@@ -177,3 +192,5 @@ export const hapusBerita = async (id: string) => {
 
   return await deleteDoc(docRef);
 };
+
+    

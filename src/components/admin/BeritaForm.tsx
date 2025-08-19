@@ -32,6 +32,24 @@ interface BeritaFormProps {
   berita?: BeritaClient | null;
 }
 
+const transformGoogleDriveUrl = (url: string): string => {
+    if (url.includes('drive.google.com/file/d/')) {
+        try {
+            const urlObj = new URL(url);
+            const pathParts = urlObj.pathname.split('/');
+            const fileId = pathParts[pathParts.indexOf('d') + 1];
+            if (fileId) {
+                return `https://drive.google.com/uc?export=view&id=${fileId}`;
+            }
+        } catch (error) {
+            console.error("Invalid URL for Google Drive conversion", error);
+            return url; // Return original url if parsing fails
+        }
+    }
+    return url;
+};
+
+
 export function BeritaForm({ berita }: BeritaFormProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -48,7 +66,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
       gambar: null,
     },
   });
-
+  
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -62,37 +80,37 @@ export function BeritaForm({ berita }: BeritaFormProps) {
 
   useEffect(() => {
     if (imageSource === 'url' && urlValue) {
-        // We only show preview for uploaded files or existing firebase storage urls
-        // to avoid crashes with unsupported URLs (like Google Photos).
-        if (urlValue.startsWith('blob:') || urlValue.includes('firebasestorage')) {
-          setPreview(urlValue);
-        } else {
-          setPreview(null);
+        const transformedUrl = transformGoogleDriveUrl(urlValue);
+        setPreview(transformedUrl);
+        // Set the value in the form to the transformed URL if it changed
+        if (transformedUrl !== urlValue) {
+            form.setValue('gambarUrl', transformedUrl, { shouldValidate: true });
         }
         form.setValue('gambar', null);
     } else if (imageSource === 'upload') {
        const file = form.getValues('gambar');
-       if (file) {
+       if (file instanceof File) {
          setPreview(URL.createObjectURL(file));
-       } else if(berita?.gambarUrl) {
+       } else if (berita?.gambarUrl) {
          setPreview(berita.gambarUrl);
        } else {
          setPreview(null);
        }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlValue, imageSource, form]);
+  }, [urlValue, imageSource]);
 
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsSubmitting(true);
     try {
       const isEditMode = berita && berita.id;
-
       let beritaData: BeritaTulis;
       
+      const finalGambarUrl = data.gambarUrl ? transformGoogleDriveUrl(data.gambarUrl) : '';
+
       if (imageSource === 'url') {
-        if (!data.gambarUrl && !isEditMode) {
+        if (!finalGambarUrl && !isEditMode) {
             form.setError('gambarUrl', { type: 'manual', message: 'URL Gambar atau file unggahan harus diisi.' });
             setIsSubmitting(false);
             return;
@@ -100,7 +118,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
         beritaData = {
           judul: data.judul,
           isi: data.isi,
-          gambarUrl: data.gambarUrl,
+          gambarUrl: finalGambarUrl,
           gambar: null,
         };
       } else {
@@ -201,13 +219,13 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                       <FormItem>
                         <FormControl>
                           <Input
-                            placeholder="https://..."
+                            placeholder="https://drive.google.com/file/d/..."
                             {...field}
                             disabled={imageSource !== 'url'}
                           />
                         </FormControl>
                         <FormDescription>
-                          Gunakan tautan gambar langsung (diakhiri .jpg, .png, dll). Tautan dari Google Photos tidak didukung.
+                          Tempelkan tautan dari Google Drive. Tautan akan dikonversi otomatis.
                         </FormDescription>
                          <FormMessage />
                       </FormItem>
@@ -236,3 +254,5 @@ export function BeritaForm({ berita }: BeritaFormProps) {
     </Card>
   );
 }
+
+    
