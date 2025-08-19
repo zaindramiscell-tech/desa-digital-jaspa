@@ -21,7 +21,7 @@ export interface BeritaClient {
 export interface BeritaTulis {
   judul: string;
   isi: string;
-  gambar?: File;
+  gambar?: File | null;
   gambarUrl?: string;
 }
 
@@ -85,7 +85,7 @@ export const getBeritaById = async (id: string): Promise<Berita | null> => {
 
 // Menambah berita baru
 export const tambahBerita = async (berita: BeritaTulis) => {
-  let gambarUrl = berita.gambarUrl || '';
+  let gambarUrl = '';
   if (berita.gambar) {
     const storageRef = ref(storage, `berita/${Date.now()}_${berita.gambar.name}`);
     await uploadBytes(storageRef, berita.gambar);
@@ -130,7 +130,7 @@ export const updateBerita = async (id: string, berita: BeritaTulis) => {
     isi: berita.isi,
   };
 
-  if(gambarUrl) {
+  if(berita.gambar) { // Only update URL if a new image was uploaded
     dataToUpdate.gambarUrl = gambarUrl;
   }
 

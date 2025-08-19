@@ -51,21 +51,25 @@ export function BeritaForm({ berita }: BeritaFormProps) {
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     setIsSubmitting(true);
     try {
-      if (!berita) throw new Error("Informasi berita tidak ditemukan untuk pembaruan.");
-      
-      const beritaData: BeritaTulis = {
-        judul: data.judul,
-        isi: data.isi,
-        gambar: data.gambar,
-        gambarUrl: berita?.gambarUrl
-      };
+      const isEditMode = berita && berita.id;
 
-      if (berita && berita.id) {
+      if (isEditMode) {
         // Update
+        const beritaData: BeritaTulis = {
+          judul: data.judul,
+          isi: data.isi,
+          gambar: data.gambar || null,
+          gambarUrl: berita.gambarUrl, // Pass existing URL
+        };
         await updateBerita(berita.id, beritaData);
         toast({ title: "Berhasil", description: "Berita telah berhasil diperbarui." });
       } else {
         // Create
+        const beritaData: BeritaTulis = {
+          judul: data.judul,
+          isi: data.isi,
+          gambar: data.gambar || null,
+        };
         await tambahBerita(beritaData);
         toast({ title: "Berhasil", description: "Berita baru telah berhasil ditambahkan." });
       }
