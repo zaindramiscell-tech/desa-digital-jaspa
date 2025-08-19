@@ -21,17 +21,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const formSchema = z.object({
   judul: z.string().min(5, { message: "Judul harus memiliki setidaknya 5 karakter." }),
   isi: z.string().min(20, { message: "Isi berita harus memiliki setidaknya 20 karakter." }),
-  gambarUrl: z.string().url({ message: "URL tidak valid." }).optional().or(z.literal('')),
+  gambarUrl: z.string().optional().or(z.literal('')),
   gambar: z.any().optional(),
-}).refine(data => {
-    // For new posts, one of the two must be present.
-    if (!data.id) { // Assuming id is passed for edits
-        return !!data.gambarUrl || !!data.gambar;
-    }
-    return true;
-}, {
-    message: "Anda harus menyediakan URL gambar atau mengunggah file.",
-    path: ["gambarUrl"],
 });
 
 
@@ -71,10 +62,27 @@ export function BeritaForm({ berita }: BeritaFormProps) {
 
   useEffect(() => {
     if (imageSource === 'url' && urlValue) {
-        setPreview(urlValue);
+        // We only show preview for uploaded files or existing firebase storage urls
+        // to avoid crashes with unsupported URLs (like Google Photos).
+        if (urlValue.startsWith('blob:') || urlValue.includes('firebasestorage')) {
+          setPreview(urlValue);
+        } else {
+          setPreview(null);
+        }
         form.setValue('gambar', null);
+    } else if (imageSource === 'upload') {
+       const file = form.getValues('gambar');
+       if (file) {
+         setPreview(URL.createObjectURL(file));
+       } else if(berita?.gambarUrl) {
+         setPreview(berita.gambarUrl);
+       } else {
+         setPreview(null);
+       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlValue, imageSource, form]);
+
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsSubmitting(true);
@@ -84,6 +92,11 @@ export function BeritaForm({ berita }: BeritaFormProps) {
       let beritaData: BeritaTulis;
       
       if (imageSource === 'url') {
+        if (!data.gambarUrl && !isEditMode) {
+            form.setError('gambarUrl', { type: 'manual', message: 'URL Gambar atau file unggahan harus diisi.' });
+            setIsSubmitting(false);
+            return;
+        }
         beritaData = {
           judul: data.judul,
           isi: data.isi,
@@ -91,6 +104,11 @@ export function BeritaForm({ berita }: BeritaFormProps) {
           gambar: null,
         };
       } else {
+         if (!data.gambar && !isEditMode) {
+            form.setError('gambar', { type: 'manual', message: 'File unggahan atau URL Gambar harus diisi.' });
+            setIsSubmitting(false);
+            return;
+        }
         beritaData = {
           judul: data.judul,
           isi: data.isi,
@@ -162,9 +180,18 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                   <TabsTrigger value="url"><Link2 className="mr-2 h-4 w-4" /> Gunakan URL</TabsTrigger>
                 </TabsList>
                 <TabsContent value="upload" className="pt-4">
-                  <FormControl>
-                    <Input type="file" accept="image/*" onChange={handleImageChange} disabled={imageSource !== 'upload'} />
-                  </FormControl>
+                   <FormField
+                    control={form.control}
+                    name="gambar"
+                    render={({ field }) => (
+                       <FormItem>
+                        <FormControl>
+                          <Input type="file" accept="image/*" onChange={handleImageChange} disabled={imageSource !== 'upload'} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </TabsContent>
                 <TabsContent value="url" className="pt-4">
                    <FormField
@@ -180,14 +207,14 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                           />
                         </FormControl>
                         <FormDescription>
-                          Masukkan tautan gambar langsung (diakhiri .jpg, .png, dll). Tautan dari Google Photos tidak didukung.
+                          Gunakan tautan gambar langsung (diakhiri .jpg, .png, dll). Tautan dari Google Photos tidak didukung.
                         </FormDescription>
+                         <FormMessage />
                       </FormItem>
                     )}
                     />
                 </TabsContent>
               </Tabs>
-               <FormMessage>{form.formState.errors.gambarUrl?.message}</FormMessage>
             </FormItem>
 
             {preview && (
