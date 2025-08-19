@@ -120,7 +120,6 @@ const seedBerita = async () => {
 
 // Mengambil semua berita
 export const getSemuaBerita = async (): Promise<Berita[]> => {
-  await seedBerita(); // Panggil fungsi seeding
   const q = query(beritaCollection, orderBy('tanggalPublikasi', 'desc'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({
