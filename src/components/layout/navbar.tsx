@@ -12,8 +12,9 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Beranda" },
     { href: "/profil", label: "Profil Desa" },
-    { href: "/#berita", label: "Berita" },
+    { href: "/berita", label: "Berita" },
     { href: "/#program", label: "Program Kerja" },
+    { href: "/admin/berita", label: "Admin Berita"},
     { href: "#", label: "Data Desa" },
   ];
 

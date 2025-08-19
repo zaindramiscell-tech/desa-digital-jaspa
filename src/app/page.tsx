@@ -7,18 +7,21 @@ import { ArrowRight, BookOpen, Lightbulb, Newspaper } from "lucide-react";
 export default function Home() {
   const news = [
     {
+      id: "1",
       title: "Musyawarah Desa Membahas Pembangunan Infrastruktur",
       description: "Warga desa antusias mengikuti musyawarah untuk rencana pembangunan jalan dan irigasi baru.",
       image: "https://placehold.co/400x300.png",
       aiHint: "community meeting",
     },
     {
+      id: "2",
       title: "Pelatihan UMKM Digital untuk Ibu-Ibu PKK",
       description: "Inisiatif baru untuk meningkatkan keterampilan digital dan pemasaran online bagi para pelaku UMKM di desa.",
       image: "https://placehold.co/400x300.png",
       aiHint: "digital training",
     },
     {
+      id: "3",
       title: "Kerja Bakti Membersihkan Lingkungan Desa",
       description: "Semangat gotong royong warga dalam menjaga kebersihan dan keindahan lingkungan desa.",
       image: "https://placehold.co/400x300.png",
@@ -52,8 +55,8 @@ export default function Home() {
         <Image
           src="https://placehold.co/1200x600.png"
           alt="Pemandangan Desa"
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{objectFit: 'cover'}}
           className="z-0"
           data-ai-hint="village landscape"
         />
@@ -74,10 +77,15 @@ export default function Home() {
       {/* Berita Terkini Section */}
       <section id="berita" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 font-headline">Berita Terkini</h2>
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">Berita Terkini</h2>
+            <Button asChild variant="outline">
+              <Link href="/berita">Lihat Semua Berita <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {news.map((item, index) => (
-              <Card key={index} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
+            {news.map((item) => (
+              <Card key={item.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
                 <CardHeader className="p-0">
                   <Image src={item.image} alt={item.title} width={400} height={300} className="w-full h-48 object-cover" data-ai-hint={item.aiHint} />
                 </CardHeader>
@@ -87,7 +95,7 @@ export default function Home() {
                 </CardContent>
                 <CardFooter className="p-6 pt-0">
                   <Button asChild variant="link" className="p-0 text-primary hover:text-accent">
-                    <Link href="#">Baca Selengkapnya <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                    <Link href={`/berita/${item.id}`}>Baca Selengkapnya <ArrowRight className="ml-2 h-4 w-4" /></Link>
                   </Button>
                 </CardFooter>
               </Card>
