@@ -41,6 +41,16 @@ interface BeritaFormProps {
   berita?: BeritaClient | null;
 }
 
+const transformGoogleDriveUrl = (url: string): string => {
+  if (!url) return url;
+  const gdriveRegex = /https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/;
+  const match = url.match(gdriveRegex);
+  if (match && match[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  }
+  return url;
+};
+
 export function BeritaForm({ berita }: BeritaFormProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -71,8 +81,12 @@ export function BeritaForm({ berita }: BeritaFormProps) {
 
   useEffect(() => {
     if (imageSource === 'url' && urlValue) {
-      setPreview(urlValue);
-      form.setValue('gambar', null); // Clear file input if URL is being used
+        const transformedUrl = transformGoogleDriveUrl(urlValue);
+        setPreview(transformedUrl);
+        if(transformedUrl !== urlValue) {
+             form.setValue('gambarUrl', transformedUrl, { shouldValidate: true });
+        }
+        form.setValue('gambar', null);
     }
   }, [urlValue, imageSource, form]);
 
@@ -82,12 +96,14 @@ export function BeritaForm({ berita }: BeritaFormProps) {
       const isEditMode = berita && berita.id;
 
       let beritaData: BeritaTulis;
+      
+      const finalGambarUrl = data.gambarUrl ? transformGoogleDriveUrl(data.gambarUrl) : '';
 
       if (imageSource === 'url') {
         beritaData = {
           judul: data.judul,
           isi: data.isi,
-          gambarUrl: data.gambarUrl,
+          gambarUrl: finalGambarUrl,
           gambar: null,
         };
       } else {
@@ -171,13 +187,17 @@ export function BeritaForm({ berita }: BeritaFormProps) {
                     control={form.control}
                     name="gambarUrl"
                     render={({ field }) => (
-                        <FormControl>
-                            <Input 
-                                placeholder="https://..." 
-                                {...field}
-                                disabled={imageSource !== 'url'} 
-                            />
-                        </FormControl>
+                      <FormControl>
+                        <Input
+                          placeholder="https://..."
+                          {...field}
+                          disabled={imageSource !== 'url'}
+                          onChange={(e) => {
+                            const transformedUrl = transformGoogleDriveUrl(e.target.value);
+                            field.onChange(transformedUrl);
+                          }}
+                        />
+                      </FormControl>
                     )}
                     />
                 </TabsContent>
