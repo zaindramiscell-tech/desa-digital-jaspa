@@ -4,8 +4,16 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Mountain } from "lucide-react";
+import { Menu, Mountain, ChevronDown } from "lucide-react";
 import { usePathname } from 'next/navigation';
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase/config";
@@ -44,7 +52,12 @@ export function Navbar() {
     { href: "/profil", label: "Profil Desa" },
     { href: "/berita", label: "Berita" },
     { href: "/#program", label: "Program Kerja" },
-    { href: "/data", label: "Data Desa" },
+  ];
+
+  const dataLinks = [
+    { href: "/data/demografi", label: "Data Demografi" },
+    { href: "/data/idm", label: "Indeks Desa Membangun" },
+    { href: "/data/sdgs", label: "SDGs Desa" },
   ];
 
   const adminLink = user ? { href: "/admin/berita", label: "Admin" } : { href: "/login", label: "Login"};
@@ -58,12 +71,30 @@ export function Navbar() {
           <Mountain className="h-6 w-6 text-primary" />
           <span className="text-foreground">{namaDesa}</span>
         </Link>
-        <nav className="hidden md:flex gap-6">
-          {allLinks.map((link) => (
+        <nav className="hidden md:flex gap-6 items-center">
+          {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               {link.label}
             </Link>
           ))}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+               <Button variant="ghost" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary p-0">
+                Data Desa
+                <ChevronDown className="h-4 w-4 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {dataLinks.map(link => (
+                 <DropdownMenuItem key={link.href} asChild>
+                  <Link href={link.href}>{link.label}</Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+           <Link href={adminLink.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+              {adminLink.label}
+            </Link>
         </nav>
         <div className="md:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -83,7 +114,7 @@ export function Navbar() {
                   <Mountain className="h-6 w-6 text-primary" />
                   <span className="text-foreground">{namaDesa}</span>
                 </Link>
-                {allLinks.map((link) => (
+                {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
@@ -93,6 +124,25 @@ export function Navbar() {
                     {link.label}
                   </Link>
                 ))}
+                 <h4 className="font-semibold mt-2">Data Desa</h4>
+                {dataLinks.map((link) => (
+                   <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-muted-foreground hover:text-primary pl-4"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <hr className="my-4"/>
+                 <Link
+                    href={adminLink.href}
+                    className="text-muted-foreground hover:text-primary"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {adminLink.label}
+                  </Link>
               </nav>
             </SheetContent>
           </Sheet>

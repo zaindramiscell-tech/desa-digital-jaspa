@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Newspaper, BarChart3, Mountain, UserSquare, LogOut, Settings } from "lucide-react";
+import { Newspaper, BarChart3, Mountain, UserSquare, LogOut, Settings, LayoutDashboard, ChevronDown, ChevronRight, Goal, Building } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -11,10 +11,20 @@ import { Menu } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { app } from "@/lib/firebase/config";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from "react";
 
 const navLinks = [
   { href: "/admin/berita", label: "Manajemen Berita", icon: Newspaper },
-  { href: "/admin/data", label: "Manajemen Data", icon: BarChart3 },
+  { 
+    label: "Manajemen Data", 
+    icon: BarChart3,
+    subLinks: [
+      { href: "/admin/data/demografi", label: "Data Demografi", icon: Users },
+      { href: "/admin/data/idm", label: "Data IDM", icon: Building },
+      { href: "/admin/data/sdgs", label: "Data SDGs", icon: Goal },
+    ]
+  },
   { href: "/admin/profil", label: "Manajemen Profil", icon: UserSquare },
   { href: "/admin/setelan", label: "Setelan Website", icon: Settings },
 ];
@@ -24,6 +34,8 @@ export default function AdminSidebar() {
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth(app);
+  const [openCollapsible, setOpenCollapsible] = useState(pathname.startsWith('/admin/data'));
+
 
   const handleLogout = async () => {
     try {
@@ -51,17 +63,45 @@ export default function AdminSidebar() {
         <div className="flex-1 overflow-auto py-2">
           <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                  (pathname.startsWith(link.href)) && "bg-muted text-primary"
-                )}
-              >
-                <link.icon className="h-4 w-4" />
-                {link.label}
-              </Link>
+              link.subLinks ? (
+                 <Collapsible key={link.label} open={openCollapsible} onOpenChange={setOpenCollapsible}>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                     <div className="flex items-center gap-3">
+                      <link.icon className="h-4 w-4" />
+                      {link.label}
+                    </div>
+                    {openCollapsible ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pl-6">
+                     <nav className="grid items-start px-2 text-sm font-medium lg:px-4 border-l ml-1.5">
+                      {link.subLinks.map(subLink => (
+                        <Link
+                          key={subLink.href}
+                          href={subLink.href}
+                          className={cn(
+                            "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                            (pathname === subLink.href) && "bg-muted text-primary"
+                          )}
+                        >
+                          {subLink.label}
+                        </Link>
+                      ))}
+                    </nav>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                    (pathname.startsWith(link.href)) && "bg-muted text-primary"
+                  )}
+                >
+                  <link.icon className="h-4 w-4" />
+                  {link.label}
+                </Link>
+              )
             ))}
           </nav>
         </div>

@@ -1,12 +1,16 @@
-import { DataForm } from '@/components/admin/DataForm';
-import { getDataDemografi } from '@/lib/dataDesa';
 
-export const revalidate = 0;
+"use client";
 
-export default async function AdminDataPage() {
-  const data = await getDataDemografi();
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
-  return (
-      <DataForm dataAwal={data} />
-  );
+// This page just redirects to the first sub-item
+export default function AdminDataPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/admin/data/demografi');
+  }, [router]);
+
+  return null;
 }
