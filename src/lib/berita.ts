@@ -37,74 +37,65 @@ export const seedBerita = async () => {
         const batch = writeBatch(db);
         const mockBerita = [
             {
-                judul: "Musyawarah Desa Membahas Pembangunan Infrastruktur",
+                judul: "Pembangunan Jembatan Desa Selesai Lebih Cepat dari Jadwal",
                 isi: {
-                    "time": 1629896400000,
+                    "time": 1700000000000,
                     "blocks": [
-                        {
-                            "type": "header",
-                            "data": {
-                                "text": "Keputusan Bersama untuk Kemajuan Desa",
-                                "level": 2
-                            }
-                        },
-                        {
-                            "type": "paragraph",
-                            "data": {
-                                "text": "Warga desa antusias mengikuti musyawarah untuk rencana pembangunan jalan dan irigasi baru. Musyawarah ini dihadiri oleh kepala desa, perangkat desa, dan perwakilan warga dari setiap RW. Keputusan bersama diambil untuk memprioritaskan perbaikan jalan utama desa yang sudah rusak parah."
-                            }
-                        }
+                        { "type": "header", "data": { "text": "Akses Antar Dusun Kini Lebih Mudah", "level": 2 }},
+                        { "type": "paragraph", "data": { "text": "Jembatan utama yang menghubungkan dusun Harapan dan dusun Makmur telah rampung dan diresmikan oleh Kepala Desa. Pembangunan yang didanai oleh dana desa ini selesai dua minggu lebih cepat dari target, membawa kelegaan bagi warga yang kini dapat melintasi sungai dengan aman dan cepat." }}
                     ],
                     "version": "2.29.1"
                 },
-                gambarUrl: "https://images.unsplash.com/photo-1649836751538-f377a2b20884?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtdXN5YXdhcmFoJTIwZGVzYXxlbnwwfHx8fDE3NTU2MTUxODV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+                gambarUrl: "https://images.unsplash.com/photo-1599691535593-b3e364734a74?q=80&w=1170&auto=format&fit=crop",
             },
             {
-                judul: "Pelatihan UMKM Digital untuk Ibu-Ibu PKK",
+                judul: "Festival Budaya Lokal Meriahkan Akhir Pekan",
                 isi: {
-                    "time": 1629896400000,
+                    "time": 1700000100000,
                     "blocks": [
-                         {
-                            "type": "header",
-                            "data": {
-                                "text": "Mendorong Ekonomi Kreatif Desa",
-                                "level": 2
-                            }
-                        },
-                        {
-                            "type": "paragraph",
-                            "data": {
-                                "text": "Inisiatif baru untuk meningkatkan keterampilan digital dan pemasaran online bagi para pelaku UMKM di desa. Pelatihan ini mencakup materi tentang penggunaan media sosial untuk promosi, dasar-dasar fotografi produk, dan cara menggunakan platform e-commerce untuk menjangkau pasar yang lebih luas."
-                            }
-                        }
+                        { "type": "header", "data": { "text": "Melestarikan Tradisi, Menyatukan Warga", "level": 2 }},
+                        { "type": "paragraph", "data": { "text": "Lapangan desa dipenuhi oleh warga yang antusias menyaksikan berbagai pertunjukan seni dan budaya dalam Festival Budaya tahunan. Acara ini menampilkan tari-tarian tradisional, pameran kerajinan tangan, dan kuliner khas desa yang berhasil menarik perhatian tidak hanya warga lokal tetapi juga pengunjung dari luar daerah." }}
                     ],
                     "version": "2.29.1"
                 },
-                gambarUrl: "https://images.unsplash.com/photo-1602827114685-efbb2717da9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZWxhdGloYW4lMjBkaWdpdGFsJTIwJTIwfGVufDB8fHx8MTc1NTYxNTA3NHww&ixlib=rb-4.1.0&q=80&w=1080",
+                gambarUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=1170&auto=format&fit=crop",
             },
             {
-                judul: "Kerja Bakti Membersihkan Lingkungan Desa",
+                judul: "Program Pelatihan Pertanian Organik Tingkatkan Hasil Panen",
                 isi: {
-                    "time": 1629896400000,
+                    "time": 1700000200000,
                     "blocks": [
-                        {
-                            "type": "header",
-                            "data": {
-                                "text": "Gotong Royong Jaga Kebersihan",
-                                "level": 2
-                            }
-                        },
-                        {
-                            "type": "paragraph",
-                            "data": {
-                                "text": "Semangat gotong royong warga dalam menjaga kebersihan dan keindahan lingkungan desa. Kegiatan ini rutin diadakan setiap hari Jumat pagi, menyasar area-area publik seperti taman desa, selokan, dan tepi jalan. Partisipasi warga sangat tinggi, menunjukkan kepedulian terhadap lingkungan."
-                            }
-                        }
+                        { "type": "header", "data": { "text": "Menuju Pertanian Berkelanjutan", "level": 2 }},
+                        { "type": "paragraph", "data": { "text": "Kelompok tani desa berhasil meningkatkan hasil panen hingga 30% setelah mengikuti program pelatihan pertanian organik. Inisiatif ini mengajarkan metode pertanian ramah lingkungan tanpa pestisida kimia, yang tidak hanya meningkatkan kuantitas tetapi juga kualitas hasil panen sayuran dan buah-buahan." }}
                     ],
                     "version": "2.29.1"
                 },
-                gambarUrl: "https://images.unsplash.com/photo-1599839958882-748924f70a2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxrZXJqYSUyMGJha3RpfGVufDB8fHx8MTc1NTYxNTExOXww&ixlib=rb-4.1.0&q=80&w=1080",
+                gambarUrl: "https://images.unsplash.com/photo-1560493676-04071c5f467b?q=80&w=1074&auto=format&fit=crop",
             },
+            {
+                judul: "Digitalisasi Layanan Kependudukan Kini Hadir di Desa",
+                isi: {
+                    "time": 1700000300000,
+                    "blocks": [
+                        { "type": "header", "data": { "text": "Urus Surat-surat Lebih Cepat dan Mudah", "level": 2 }},
+                        { "type": "paragraph", "data": { "text": "Pemerintah desa meluncurkan sistem layanan kependudukan berbasis online. Kini, warga dapat mengurus surat keterangan, akta kelahiran, dan dokumen lainnya melalui aplikasi mobile atau situs web desa, memangkas waktu dan birokrasi yang sebelumnya panjang." }}
+                    ],
+                    "version": "2.29.1"
+                },
+                gambarUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1080&auto=format&fit=crop",
+            },
+            {
+                judul: "Anak-Anak Desa Antusias Sambut Perpustakaan Keliling",
+                isi: {
+                    "time": 1700000400000,
+                    "blocks": [
+                        { "type": "header", "data": { "text": "Meningkatkan Minat Baca Sejak Dini", "level": 2 }},
+                        { "type": "paragraph", "data": { "text": "Program perpustakaan keliling yang digagas oleh karang taruna mendapat sambutan hangat dari anak-anak. Setiap sore, mobil perpustakaan mengunjungi berbagai dusun, menyediakan akses ke ratusan buku cerita, ilmu pengetahuan, dan majalah anak-anak secara gratis." }}
+                    ],
+                    "version": "2.29.1"
+                },
+                gambarUrl: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=1170&auto=format&fit=crop",
+            }
         ];
 
         mockBerita.forEach(berita => {
