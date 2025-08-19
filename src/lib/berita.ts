@@ -37,17 +37,17 @@ const seedBerita = async () => {
             {
                 judul: "Musyawarah Desa Membahas Pembangunan Infrastruktur",
                 isi: "Warga desa antusias mengikuti musyawarah untuk rencana pembangunan jalan dan irigasi baru. Musyawarah ini dihadiri oleh kepala desa, perangkat desa, dan perwakilan warga dari setiap RW. Keputusan bersama diambil untuk memprioritaskan perbaikan jalan utama desa yang sudah rusak parah.",
-                gambarUrl: "https://placehold.co/800x400.png",
+                gambarUrl: "https://images.unsplash.com/photo-1747146114146-8b8597a53ad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8cGVydGVtdWFuJTIwd2FyZ2F8ZW58MHx8fHwxNzU1NjE1MDMyfDA&ixlib=rb-4.1.0&q=80&w=1080",
             },
             {
                 judul: "Pelatihan UMKM Digital untuk Ibu-Ibu PKK",
                 isi: "Inisiatif baru untuk meningkatkan keterampilan digital dan pemasaran online bagi para pelaku UMKM di desa. Pelatihan ini mencakup materi tentang penggunaan media sosial untuk promosi, dasar-dasar fotografi produk, dan cara menggunakan platform e-commerce untuk menjangkau pasar yang lebih luas.",
-                gambarUrl: "https://placehold.co/800x400.png",
+                gambarUrl: "https://images.unsplash.com/photo-1602827114685-efbb2717da9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZWxhdGloYW4lMjBkaWdpdGFsJTIwJTIwfGVufDB8fHx8MTc1NTYxNTA3NHww&ixlib=rb-4.1.0&q=80&w=1080",
             },
             {
                 judul: "Kerja Bakti Membersihkan Lingkungan Desa",
                 isi: "Semangat gotong royong warga dalam menjaga kebersihan dan keindahan lingkungan desa. Kegiatan ini rutin diadakan setiap hari Jumat pagi, menyasar area-area publik seperti taman desa, selokan, dan tepi jalan. Partisipasi warga sangat tinggi, menunjukkan kepedulian terhadap lingkungan.",
-                gambarUrl: "https://placehold.co/800x400.png",
+                gambarUrl: "https://images.unsplash.com/photo-1599839958882-748924f70a2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxrZXJqYSUyMGJha3RpfGVufDB8fHx8MTc1NTYxNTExOXww&ixlib=rb-4.1.0&q=80&w=1080",
             },
         ];
 
