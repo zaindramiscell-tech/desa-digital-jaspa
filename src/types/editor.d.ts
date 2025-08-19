@@ -14,7 +14,7 @@ declare module '@editorjs/link' {
     const LinkTool: BlockToolConstructable | ToolSettings;
     export default LinkTool;
 }
-declare module 'editorjs-paragraph-with-alignment' {
+declare module '@editorjs/paragraph' {
     import { BlockToolConstructable, ToolSettings } from '@editorjs/editorjs';
     const Paragraph: BlockToolConstructable | ToolSettings;
     export default Paragraph;

@@ -10,7 +10,7 @@ import List from '@editorjs/list';
 // @ts-ignore
 import LinkTool from '@editorjs/link';
 // @ts-ignore
-import Paragraph from 'editorjs-paragraph-with-alignment';
+import Paragraph from '@editorjs/paragraph';
 
 
 interface EditorProps {
@@ -30,10 +30,6 @@ const Editor: React.FC<EditorProps> = ({ data, onChange, holder }) => {
           paragraph: {
             class: Paragraph,
             inlineToolbar: true,
-            config: {
-              actions: ['bold', 'italic', 'inlineCode', 'link', 'strikethrough', 'superscript', 'subscript'],
-              defaultAlignment: 'left'
-            }
           },
           header: {
             class: Header,
