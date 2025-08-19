@@ -33,11 +33,11 @@ export default async function BeritaDetailPage({ params }: { params: { id: strin
         </div>
         <div className="relative w-full h-64 md:h-96 mb-8 rounded-lg overflow-hidden shadow-lg">
           <Image
-            src={berita.gambarUrl || 'https://placehold.co/800x400.png'}
+            src={berita.gambarUrl || 'https://images.unsplash.com/photo-1747146114146-8b8597a53ad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8cGVydGVtdWFuJTIwd2FyZ2F8ZW58MHx8fHwxNzU1NjE1MDMyfDA&ixlib=rb-4.1.0&q=80&w=1080'}
             alt={berita.judul}
             fill
             style={{objectFit: 'cover'}}
-            data-ai-hint="news article"
+            data-ai-hint="pertemuan warga"
           />
         </div>
         <div className="prose lg:prose-xl max-w-none text-muted-foreground leading-relaxed">
