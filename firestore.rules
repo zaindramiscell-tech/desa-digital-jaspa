@@ -1,47 +1,59 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper function to check if a user is an admin
+    
+    // Helper function to check if the user is an admin.
     function isAdmin() {
-      // Check if user is authenticated and if their role in the 'users' collection is 'admin'
-      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      // Check if the user is authenticated and if their user document exists with the 'admin' role.
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Publicly readable collections, only writable by admins
-    match /berita/{docId} {
+    // Helper function to check if the request is from an authenticated user.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Berita: Public can read, only admins can write.
+    match /berita/{beritaId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
+    // Data Desa (demografi, idm): Public can read, only admins can write.
     match /dataDesa/{docId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
+    // Profil Desa: Public can read, only admins can write.
     match /profilDesa/{docId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    match /sdgs/{docId} {
+    // SDGs: Public can read, only admins can write.
+    match /sdgs/{sdgId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
+    // Setelan: Public can read, only admins can write.
     match /setelan/{docId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // User profiles can be created by anyone (for registration),
-    // but can only be updated by admins.
-    // Authenticated users can read all profiles.
+    // Users: Stricter rules for user data.
     match /users/{userId} {
-      allow read: if request.auth != null;
+      // Allow user creation for anyone (for registration).
       allow create: if true;
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      // Users can read their own profile. Admins can read any profile.
+      allow read: if request.auth.uid == userId || isAdmin();
+      // Only admins can update or delete user profiles.
+      allow update, delete: if isAdmin();
     }
   }
 }
