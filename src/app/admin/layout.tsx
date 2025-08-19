@@ -18,7 +18,8 @@ import {
 } from "@/components/ui/breadcrumb"
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-
+import { getUserProfile } from '@/lib/users';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AdminLayout({
   children,
@@ -28,13 +29,27 @@ export default function AdminLayout({
   const auth = getAuth(app);
   const router = useRouter();
   const pathname = usePathname();
+  const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
+        // Check user role
+        const profile = await getUserProfile(user.uid);
+        if (profile?.role === 'admin') {
+          setIsAuthorized(true);
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Akses Ditolak",
+            description: "Anda tidak memiliki izin untuk mengakses halaman ini.",
+          });
+          router.push('/');
+        }
       } else {
         router.push('/login');
       }
@@ -47,7 +62,6 @@ export default function AdminLayout({
 
   const generateBreadcrumbs = () => {
     const pathParts = pathname.split('/').filter(part => part);
-    // Remove 'admin' part
     const breadcrumbParts = pathParts.slice(1); 
 
     if (breadcrumbParts.length === 0) return null;
@@ -94,8 +108,8 @@ export default function AdminLayout({
     );
   }
 
-  if (!user) {
-    return null; // The redirect is handled in the effect, this prevents flicker
+  if (!user || !isAuthorized) {
+    return null; 
   }
 
   return (

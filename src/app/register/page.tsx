@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '@/lib/firebase/config';
+import { createUserProfile } from '@/lib/users'; 
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,7 +40,10 @@ export default function RegisterPage() {
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     setIsSubmitting(true);
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      // Create user profile in Firestore with default role
+      await createUserProfile(userCredential.user.uid, userCredential.user.email);
+      
       toast({ title: "Berhasil", description: "Akun admin berhasil dibuat. Silakan masuk." });
       router.push('/login');
     } catch (error: any) {
