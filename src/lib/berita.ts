@@ -37,7 +37,7 @@ const seedBerita = async () => {
             {
                 judul: "Musyawarah Desa Membahas Pembangunan Infrastruktur",
                 isi: "Warga desa antusias mengikuti musyawarah untuk rencana pembangunan jalan dan irigasi baru. Musyawarah ini dihadiri oleh kepala desa, perangkat desa, dan perwakilan warga dari setiap RW. Keputusan bersama diambil untuk memprioritaskan perbaikan jalan utama desa yang sudah rusak parah.",
-                gambarUrl: "https://images.unsplash.com/photo-1747146114146-8b8597a53ad4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8cGVydGVtdWFuJTIwd2FyZ2F8ZW58MHx8fHwxNzU1NjE1MDMyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+                gambarUrl: "https://images.unsplash.com/photo-1649836751538-f377a2b20884?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtdXN5YXdhcmFoJTIwZGVzYXxlbnwwfHx8fDE3NTU2MTUxODV8MA&ixlib=rb-4.1.0&q=80&w=1080",
             },
             {
                 judul: "Pelatihan UMKM Digital untuk Ibu-Ibu PKK",
