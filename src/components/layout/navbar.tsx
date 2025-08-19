@@ -14,8 +14,8 @@ export function Navbar() {
     { href: "/profil", label: "Profil Desa" },
     { href: "/berita", label: "Berita" },
     { href: "/#program", label: "Program Kerja" },
+    { href: "/data", label: "Data Desa" },
     { href: "/admin/berita", label: "Admin Berita"},
-    { href: "#", label: "Data Desa" },
   ];
 
   return (
