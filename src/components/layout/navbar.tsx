@@ -18,6 +18,7 @@ import { usePathname } from 'next/navigation';
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase/config";
 import { getSetelan } from "@/lib/setelan";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,7 +72,7 @@ export function Navbar() {
           <Mountain className="h-6 w-6 text-primary" />
           <span className="text-foreground">{namaDesa}</span>
         </Link>
-        <nav className="hidden md:flex gap-6 items-center">
+        <nav className="hidden md:flex gap-4 items-center">
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               {link.label}
@@ -79,7 +80,7 @@ export function Navbar() {
           ))}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-               <Button variant="ghost" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary p-0">
+               <Button variant="ghost" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary p-2">
                 Data Desa
                 <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
@@ -95,8 +96,10 @@ export function Navbar() {
            <Link href={adminLink.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               {adminLink.label}
             </Link>
+           <ThemeToggle />
         </nav>
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon">
