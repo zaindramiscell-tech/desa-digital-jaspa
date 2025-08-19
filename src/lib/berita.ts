@@ -15,9 +15,8 @@ export interface BeritaClient {
     judul: string;
     isi: string;
     gambarUrl: string;
-    tanggalPublikasi: string; // Changed to string
+    tanggalPublikasi: string;
 }
-
 
 export interface BeritaTulis {
   judul: string;

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Berita, BeritaTulis, tambahBerita, updateBerita } from '@/lib/berita';
+import { BeritaClient, BeritaTulis, tambahBerita, updateBerita } from '@/lib/berita';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,7 @@ const formSchema = z.object({
 });
 
 interface BeritaFormProps {
-  berita?: Berita | null;
+  berita?: BeritaClient | null;
 }
 
 export function BeritaForm({ berita }: BeritaFormProps) {
@@ -51,6 +51,8 @@ export function BeritaForm({ berita }: BeritaFormProps) {
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     setIsSubmitting(true);
     try {
+      if (!berita) throw new Error("Informasi berita tidak ditemukan untuk pembaruan.");
+      
       const beritaData: BeritaTulis = {
         judul: data.judul,
         isi: data.isi,
@@ -58,7 +60,7 @@ export function BeritaForm({ berita }: BeritaFormProps) {
         gambarUrl: berita?.gambarUrl
       };
 
-      if (berita) {
+      if (berita && berita.id) {
         // Update
         await updateBerita(berita.id, beritaData);
         toast({ title: "Berhasil", description: "Berita telah berhasil diperbarui." });
