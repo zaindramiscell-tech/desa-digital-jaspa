@@ -11,8 +11,8 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-  // Hide navbar on admin routes
-  if (pathname.startsWith('/admin')) {
+  // Hide navbar on admin, login, and register routes
+  if (pathname.startsWith('/admin') || pathname === '/login' || pathname === '/register') {
     return null;
   }
 
@@ -22,7 +22,7 @@ export function Navbar() {
     { href: "/berita", label: "Berita" },
     { href: "/#program", label: "Program Kerja" },
     { href: "/data", label: "Data Desa" },
-    { href: "/admin/berita", label: "Admin"},
+    { href: "/login", label: "Admin"},
   ];
 
   return (
