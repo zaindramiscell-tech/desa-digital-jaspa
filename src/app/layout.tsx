@@ -1,13 +1,27 @@
-import type { Metadata } from 'next';
+import type { Metadata, ResolvingMetadata } from 'next';
 import './globals.css';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from "@/components/ui/toaster";
+import { getSetelan } from '@/lib/setelan';
 
-export const metadata: Metadata = {
-  title: 'Desa Digital',
-  description: 'Platform informasi desa yang modern, informatif, dan mudah dikelola.',
-};
+// export const metadata: Metadata = {
+//   title: 'Desa Digital',
+//   description: 'Platform informasi desa yang modern, informatif, dan mudah dikelola.',
+// };
+
+export async function generateMetadata(
+  {},
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // fetch data
+  const setelan = await getSetelan();
+ 
+  return {
+    title: setelan.namaDesa,
+    description: setelan.deskripsiSitus,
+  }
+}
 
 export default function RootLayout({
   children,

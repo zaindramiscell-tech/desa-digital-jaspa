@@ -9,6 +9,7 @@ import { Menu, Mountain } from "lucide-react";
 import { usePathname } from 'next/navigation';
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/lib/firebase/config";
+import { getSetelan } from "@/lib/setelan";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,12 +17,20 @@ export function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const auth = getAuth(app);
+  const [namaDesa, setNamaDesa] = useState("Desa Digital");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
     });
+     // Fetch settings on client side to avoid making Navbar a server component
+    async function fetchSetelan() {
+        const setelan = await getSetelan();
+        setNamaDesa(setelan.namaDesa);
+    }
+    fetchSetelan();
+
     return () => unsubscribe();
   }, [auth]);
 
@@ -47,7 +56,7 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2 font-bold font-headline text-lg">
           <Mountain className="h-6 w-6 text-primary" />
-          <span className="text-foreground">Desa Digital</span>
+          <span className="text-foreground">{namaDesa}</span>
         </Link>
         <nav className="hidden md:flex gap-6">
           {allLinks.map((link) => (
@@ -72,7 +81,7 @@ export function Navbar() {
               <nav className="grid gap-6 text-lg font-medium mt-8">
                 <Link href="/" className="flex items-center gap-2 text-lg font-semibold mb-4">
                   <Mountain className="h-6 w-6 text-primary" />
-                  <span className="text-foreground">Desa Digital</span>
+                  <span className="text-foreground">{namaDesa}</span>
                 </Link>
                 {allLinks.map((link) => (
                   <Link

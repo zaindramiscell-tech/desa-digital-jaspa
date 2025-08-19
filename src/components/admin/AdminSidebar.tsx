@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Newspaper, BarChart3, Mountain, UserSquare, LogOut } from "lucide-react";
+import { Newspaper, BarChart3, Mountain, UserSquare, LogOut, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -16,6 +16,7 @@ const navLinks = [
   { href: "/admin/berita", label: "Manajemen Berita", icon: Newspaper },
   { href: "/admin/data", label: "Manajemen Data", icon: BarChart3 },
   { href: "/admin/profil", label: "Manajemen Profil", icon: UserSquare },
+  { href: "/admin/setelan", label: "Setelan Website", icon: Settings },
 ];
 
 export default function AdminSidebar() {
