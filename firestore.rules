@@ -2,58 +2,30 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper function to check if the user is an admin.
+
+    // Helper function to check if the user is an authenticated admin
     function isAdmin() {
-      // Check if the user is authenticated and if their user document exists with the 'admin' role.
       return request.auth != null && 
              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Helper function to check if the request is from an authenticated user.
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    // Berita: Public can read, only admins can write.
-    match /berita/{beritaId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // Data Desa (demografi, idm): Public can read, only admins can write.
-    match /dataDesa/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // Profil Desa: Public can read, only admins can write.
-    match /profilDesa/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // SDGs: Public can read, only admins can write.
-    match /sdgs/{sdgId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // Setelan: Public can read, only admins can write.
-    match /setelan/{docId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // Users: Stricter rules for user data.
+    // Users collection rules:
+    // - Only logged-in users can read their own profile.
+    // - Anyone can create a user profile (for signup).
+    // - Only admins can update or delete user profiles.
     match /users/{userId} {
-      // Allow user creation for anyone (for registration).
+      allow read: if request.auth != null && request.auth.uid == userId;
       allow create: if true;
-      // Users can read their own profile. Admins can read any profile.
-      allow read: if request.auth.uid == userId || isAdmin();
-      // Only admins can update or delete user profiles.
       allow update, delete: if isAdmin();
+    }
+
+    // Public data collections (berita, dataDesa, profilDesa, sdgs, setelan)
+    // - Anyone can read.
+    // - Only admins can create, update, or delete.
+    match /{collection}/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }
