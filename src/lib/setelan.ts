@@ -19,7 +19,7 @@ export interface Setelan {
   kontak: Kontak;
 }
 
-const docRef = doc(db, 'setelan', 'website');
+const docRef = () => doc(db, 'setelan', 'website');
 
 const defaultData: Setelan = {
   namaDesa: "Desa Digital",
@@ -35,17 +35,17 @@ const defaultData: Setelan = {
 };
 
 export const seedSetelan = async () => {
-    const docSnap = await getDoc(docRef);
+    const docSnap = await getDoc(docRef());
     if (!docSnap.exists()) {
         console.log("Dokumen setelan tidak ditemukan, membuat data default...");
-        await setDoc(docRef, defaultData);
+        await setDoc(docRef(), defaultData);
     }
 }
 
 
 // Mengambil data setelan website
 export const getSetelan = async (): Promise<Setelan> => {
-  const docSnap = await getDoc(docRef);
+  const docSnap = await getDoc(docRef());
   if (docSnap.exists()) {
     return { id: docSnap.id, ...docSnap.data() } as Setelan;
   }
@@ -56,5 +56,5 @@ export const getSetelan = async (): Promise<Setelan> => {
 
 // Memperbarui data setelan website
 export const updateSetelan = async (data: Partial<Setelan>) => {
-    await setDoc(docRef, data, { merge: true });
+    await setDoc(docRef(), data, { merge: true });
 };
